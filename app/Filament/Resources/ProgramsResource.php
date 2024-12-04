@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Repeater;
 
 class ProgramsResource extends Resource
 {
@@ -31,6 +32,9 @@ class ProgramsResource extends Resource
     {
         return $form
             ->schema([
+                Select::make('campus_id')
+                    ->label('What campus is this program under?'),
+
                 Select::make('college_id')
                     ->label('What college is this program under?')
                     ->searchable()
@@ -39,6 +43,14 @@ class ProgramsResource extends Resource
                     ->required(),
                 TextInput::make('program_name')->required(),
                 TextInput::make('program_abbreviation')->required(),
+                Repeater::make('programMajors')
+
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('name')->required(),
+
+                    ])
+    ->columns(2)
             ]);
     }
 

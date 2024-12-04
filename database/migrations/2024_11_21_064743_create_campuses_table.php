@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('campus_name', 255);         //e.g. Main Campus, Daraga Campus, East Campus
             $table->string('campus_address', 255);      //e.g. Polangui, Albay
             //campus_address column has been moved to colleges table :)
+            //add boolean if satellite campus
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users', 'id');
             $table->foreignId('updated_by')->nullable()->constrained('users', 'id');

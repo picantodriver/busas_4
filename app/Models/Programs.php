@@ -22,6 +22,11 @@ class Programs extends Model
         return $this->belongsTo(Colleges::class);
     }
 
+    public function programMajors()
+    {
+        return $this->hasMany(ProgramsMajor::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

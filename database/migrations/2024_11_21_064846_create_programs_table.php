@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
+            //add campus_id
             $table->foreignId('college_id')->references('id')->on('colleges');
             $table->string('program_name', 255);                //e.g. Bachelor of Science in Computer Science, Bachelor of Science in Accountancy
             $table->string('program_abbreviation', 20);         //e.g. BSCS, BSA
