@@ -3,19 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\UserTracking;
 
 class Programs extends Model
 {
     use UserTracking;
+    use HasFactory;
 
     protected $fillable = [
+        'campus_id',
         'college_id',
         'program_name',
         'program_abbreviation',
         'created_by',
         'updated_by',
     ];
+
 
     public function college()
     {
