@@ -17,9 +17,10 @@ class ProgramsMajorResource extends Resource
 {
     protected static ?string $model = ProgramsMajor::class;
     protected static ?string $navigationGroup = 'Academic Structure';
+    protected static bool $shouldRegisterNavigation = false;
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
-    protected static ?string $navigationLaber = 'Program Majors';
+    protected static ?string $navigationLabel = 'Program Majors';
     protected static ?string $navigationIcon = 'heroicon-s-check-badge';
 
     public static function form(Form $form): Form

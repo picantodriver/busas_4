@@ -6,6 +6,7 @@ use App\Filament\Resources\ProgramsResource\Pages;
 use App\Filament\Resources\ProgramsResource\RelationManagers;
 use App\Models\Colleges;
 use App\Models\Programs;
+use App\Models\Campuses;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -33,24 +34,35 @@ class ProgramsResource extends Resource
         return $form
             ->schema([
                 Select::make('campus_id')
-                    ->label('What campus is this program under?'),
-
-                Select::make('college_id')
-                    ->label('What college is this program under?')
-                    ->searchable()
-                    ->options(Colleges::all()->pluck('college_name', 'id'))
-                    ->getSearchResultsUsing(fn (string $query) => Colleges::where('college_name', 'like', "%{$query}%")->get()->pluck('college_name', 'id'))
-                    ->required(),
+                ->label('Select Campus')
+                ->required()
+                ->options(Campuses::all()->pluck('campus_name', 'id'))
+                ->searchable()
+                ->reactive()
+                ->getSearchResultsUsing(fn (string $query) => Campuses::where('campus_name', 'like', "%{$query}%")->get()->pluck('campus_name', 'id'))
+                ->getOptionLabelUsing(fn ($value) => Campuses::find($value)?->campus_name ?? 'Unknown Campus'),
+            Select::make('college_id')
+                ->label('What college is this program under?')
+                ->searchable()
+                ->options(function ($get) {
+                    $campusId = $get('campus_id');
+                    if ($campusId) {
+                        return Colleges::where('campus_id', $campusId)->pluck('college_name', 'id');
+                    }
+                    return [];
+                })
+                ->getSearchResultsUsing(function ($get, string $query) {
+                    $campusId = $get('campus_id');
+                    if ($campusId) {
+                        return Colleges::where('campus_id', $campusId)
+                            ->where('college_name', 'like', "%{$query}%")
+                            ->pluck('college_name', 'id');
+                    }
+                    return [];
+                })
+                ->required(),
                 TextInput::make('program_name')->required(),
                 TextInput::make('program_abbreviation')->required(),
-                Repeater::make('programMajors')
-
-                    ->columnSpanFull()
-                    ->schema([
-                        TextInput::make('name')->required(),
-
-                    ])
-    ->columns(2)
             ]);
     }
 
