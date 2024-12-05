@@ -21,7 +21,7 @@ class ProgramsMajor extends Model
 
     public function program()
     {
-        return $this->belongsTo(Programs::class);
+        return $this->belongsTo(Programs::class, 'program_id');
     }
     public function creator()
     {

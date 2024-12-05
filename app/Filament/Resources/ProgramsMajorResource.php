@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,7 +18,7 @@ class ProgramsMajorResource extends Resource
 {
     protected static ?string $model = ProgramsMajor::class;
     protected static ?string $navigationGroup = 'Academic Structure';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
     protected static ?string $navigationLabel = 'Program Majors';
@@ -35,7 +36,11 @@ class ProgramsMajorResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('program.program_name')
+                    ->label('Program Name')
+                    ->searchable(),
+                TextColumn::make('program_major_name'),
+                TextColumn::make('program_major_abbreviation')
             ])
             ->filters([
                 //

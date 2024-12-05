@@ -12,7 +12,6 @@ class Programs extends Model
     use HasFactory;
 
     protected $fillable = [
-        'campus_id',
         'college_id',
         'program_name',
         'program_abbreviation',
@@ -28,7 +27,7 @@ class Programs extends Model
 
     public function programMajors()
     {
-        return $this->hasMany(ProgramsMajor::class);
+        return $this->hasMany(ProgramsMajor::class, 'program_id');
     }
 
     public function creator()

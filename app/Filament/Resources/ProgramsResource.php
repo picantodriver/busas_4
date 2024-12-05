@@ -26,7 +26,6 @@ class ProgramsResource extends Resource
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
     protected static ?string $navigationLabel = 'Programs';
-
     protected static ?string $navigationIcon = 'heroicon-s-list-bullet';
 
     public static function form(Form $form): Form
@@ -63,6 +62,16 @@ class ProgramsResource extends Resource
                 ->required(),
                 TextInput::make('program_name')->required(),
                 TextInput::make('program_abbreviation')->required(),
+                Repeater::make('programMajors')
+                    ->relationship('programMajors')
+                    ->label('Program Majors')
+                    ->schema([
+                        TextInput::make('program_major_name')
+                            ->label('Program Major'),
+                        TextInput::make('program_major_abbreviation')
+                            ->label('Program Major Abbreviation ')
+                    ])
+                    ->columnSpanFull()
             ]);
     }
 
@@ -101,8 +110,9 @@ class ProgramsResource extends Resource
     {
         return [
             'index' => Pages\ListPrograms::route('/'),
-            //'create' => Pages\CreatePrograms::route('/create'),
-            //'edit' => Pages\EditPrograms::route('/{record}/edit'),
+            'create' => Pages\CreatePrograms::route('/create'),
+            'edit' => Pages\EditPrograms::route('/{record}/edit'),
         ];
     }
+    
 }
