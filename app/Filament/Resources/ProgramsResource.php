@@ -85,6 +85,19 @@ class ProgramsResource extends Resource
                     ->label('Program Abbreviation'),
                 TextColumn::make('college.college_name')
                     ->label('College Name'),
+                TextColumn::make('programMajors.program_major_name')
+                    // ->getStateUsing(function ($record) {
+                    //     return $record->programMajors->pluck('program_major_name')->join(', ');
+                    // })
+                    ->listWithLineBreaks()
+                    ->bulleted(),
+                TextColumn::make('programMajors.program_major_abbreviation')
+                    // ->label('Program Major Abbreviation')
+                    // ->getStateUsing(function ($record) {
+                    //     return $record->programMajors->pluck('program_major_abbreviation')->join(', ');
+                    // })
+                    ->listWithLineBreaks()
+                    ->bulleted(),
             ])
             ->filters([
                 //
@@ -114,5 +127,5 @@ class ProgramsResource extends Resource
             'edit' => Pages\EditPrograms::route('/{record}/edit'),
         ];
     }
-    
+
 }

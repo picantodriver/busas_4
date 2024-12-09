@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
             $table->foreignId('program_id')->references('id')->on('programs');
-            $table->string('program_major_name', 255);         // e.g. Bachelor of Science in Information Technology, major in Animation
+            $table->string('program_major_name', 255);         // e.g. major in Animation
             $table->string('program_major_abbreviation', 20);   // e.g. BSIT-Animation
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users', 'id');

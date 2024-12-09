@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProgramsMajorResource\Pages;
 use App\Filament\Resources\ProgramsMajorResource\RelationManagers;
 use App\Models\ProgramsMajor;
+use App\Models\Programs;
+use App\Models\Campuses;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,12 +15,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 
 class ProgramsMajorResource extends Resource
 {
     protected static ?string $model = ProgramsMajor::class;
     protected static ?string $navigationGroup = 'Academic Structure';
-    protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
     protected static ?string $navigationLabel = 'Program Majors';
@@ -28,7 +33,28 @@ class ProgramsMajorResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Select::make('campus_id')
+                    ->label('Select Campus')
+                    ->required()
+                    ->options(Campuses::all()->pluck('campus_name', 'id'))
+                    ->searchable()
+                    ->reactive()
+                    ->getSearchResultsUsing(fn (string $query) => Campuses::where('campus_name', 'like', "%{$query}%")->get()->pluck('campus_name', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => Campuses::find($value)?->campus_name ?? 'Unknown Campus'),
+                Select::make('program_id')
+                    ->label('Select Program')
+                    ->required()
+                    ->options(Programs::all()->pluck('program_name', 'id'))
+                    ->searchable()
+                    ->reactive()
+                    ->getSearchResultsUsing(fn (string $query) => Programs::where('program_name', 'like', "%{$query}%")->get()->pluck('program_name', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
+                TextInput::make('program_major_name')
+                    ->label('Major Name')
+                    ->required(),
+                TextInput::make('program_major_abbreviation')
+                    ->label('Major Abbreviation')
+                    ->required(),
             ]);
     }
 
