@@ -6,8 +6,10 @@ use App\Filament\Resources\CurriculaResource\Pages;
 use App\Models\Programs;
 use App\Models\AcadYears;
 use App\Filament\Resources\CurriculaResource\RelationManagers;
+use App\Models\AcadTerms;
 use App\Models\Curricula;
 use App\Models\ProgramsMajor;
+use App\Models\Campuses;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -34,25 +36,48 @@ class CurriculaResource extends Resource
         return $form
             ->schema([
                 Select::make('acad_year_id')
-                    ->label('Select Aacademic Year')
+                    ->label('Select Academic Year')
                     ->required()
                     ->options(AcadYears::all()->pluck('year', 'id'))
                     ->searchable()
+                    ->reactive()
                     ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
                     ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-                Select::make('program_id')
+                Select::make('acad_term_id')
+                    ->label('Select Academic Term')
+                    ->required()
+                    ->options(function ($get) {
+                        $acadYearId = $get('acad_year_id');
+                        if ($acadYearId) {
+                            return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                        }
+                        return [];
+                    })
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
+                Select::make('campus_id')
+                    ->label('Select Campus')
+                    ->required()
+                    ->reactive()
+                    ->options(Campuses::all()->pluck('campus_name', 'id'))
+                    ->searchable(),
+                    Select::make('program_id')
                     ->label('Select Program')
                     ->required()
-                    ->options(Programs::all()->pluck('program_name', 'id'))
+                    ->options(function ($get) {
+                        $campus_id = $get('campus_id');
+                        if ($campus_id) {
+                            // get programs from campus through college
+                            return Programs::whereHas('college', function (Builder $query) use ($campus_id) {
+                                $query->where('campus_id', $campus_id);
+                            })->pluck('program_name', 'id');
+                        }
+                        return [];
+                    })
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $query) => Programs::where('program_name', 'like', "%{$query}%")->get()->pluck('program_name', 'id'))
                     ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                Select::make('program_major_id')
-                    ->label('Select Program Major')
-                    ->options(ProgramsMajor::all()->pluck('program_major_name', 'id'))
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $query) => ProgramsMajor::where('program_major_name', 'like', "%{$query}%")->get()->pluck('program_major_name', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Program Major'),
                 TextInput::make('curriculum_name')->required(),
                 ]);
     }

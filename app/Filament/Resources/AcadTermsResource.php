@@ -22,7 +22,7 @@ class AcadTermsResource extends Resource
 
     protected static ?string $model = AcadTerms::class;
     protected static ?string $navigationGroup = 'Institutional Structure';
-
+    protected static bool $shouldRegisterNavigation = false;
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
     protected static ?string $navigationLabel = 'Academic Terms';

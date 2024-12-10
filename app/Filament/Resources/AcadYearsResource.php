@@ -22,7 +22,7 @@ class AcadYearsResource extends Resource
     protected static ?string $navigationGroup = 'Institutional Structure';
 
     //protected static ?int $navigationSort = 1; //set the order in sidebar
-    protected static ?string $navigationLabel = 'Academic Years';
+    protected static ?string $navigationLabel = 'Academic Years and Terms';
 
     protected static ?string $navigationIcon = 'heroicon-s-calendar';
 
@@ -44,6 +44,10 @@ class AcadYearsResource extends Resource
                 TextColumn::make('start_date')
                 ->sortable(),
                 TextColumn::make('end_date'),
+                TextColumn::make('AcadTerms.acad_term')
+                ->label('Academic Terms')
+                ->listWithLineBreaks()
+                ->bulleted(),
             ])
             ->filters([
                 //

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Colleges extends Model
 {
     use UserTracking;
+    use HasFactory;
 
     protected $fillable = [
         'campus_id',
@@ -20,6 +22,10 @@ class Colleges extends Model
     public function campus()
     {
         return $this->belongsTo(Campuses::class, 'campus_id');
+    }
+    public function programs()
+    {
+        return $this->hasMany(Programs::class, 'college_id');
     }
     public function creator()
     {
