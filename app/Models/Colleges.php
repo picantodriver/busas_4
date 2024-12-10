@@ -19,7 +19,7 @@ class Colleges extends Model
 
     public function campus()
     {
-        return $this->belongsTo(Campuses::class);
+        return $this->belongsTo(Campuses::class, 'campus_id');
     }
     public function creator()
     {

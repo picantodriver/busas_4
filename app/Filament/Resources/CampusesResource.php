@@ -5,7 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CampusesResource\Pages;
 use App\Filament\Resources\CampusesResource\RelationManagers;
 use App\Models\Campuses;
+use App\Models\Colleges;
+use App\Models\Programs;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,7 +26,7 @@ class CampusesResource extends Resource
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
-    protected static ?string $navigationLabel = 'Campuses';
+    protected static ?string $navigationLabel = 'Campus and Colleges';
     protected static ?string $navigationIcon = 'heroicon-s-building-library';
 
     public static function form(Form $form): Form
@@ -32,6 +35,16 @@ class CampusesResource extends Resource
             ->schema([
                 TextInput::make('campus_name')->required()
                     ->label('Campus Name'),
+                Repeater::make('colleges')
+                ->relationship('colleges')
+                ->label('Colleges')
+                ->schema([
+                    TextInput::make('college_name')->required()
+                        ->label('College Name'),
+                    TextInput::make('college_address')->required()
+                        ->label('College Address')
+                ])
+
             ]);
     }
 
@@ -41,6 +54,14 @@ class CampusesResource extends Resource
             ->columns([
                 TextColumn::make('campus_name')
                     ->label('Campus Name'),
+                TextColumn::make('colleges.college_name')
+                    ->label('Colleges')
+                    ->listWithLineBreaks()
+                    ->bulleted(),
+                TextColumn::make('colleges.college_address')
+                    ->label('College Address')
+                    ->listWithLineBreaks()
+                    ->bulleted()
             ])
             ->filters([
                 //

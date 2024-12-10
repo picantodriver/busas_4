@@ -6,12 +6,15 @@ use App\Filament\Resources\SignatoriesResource\Pages;
 use App\Filament\Resources\SignatoriesResource\RelationManagers;
 use App\Models\Signatories;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
 
 class SignatoriesResource extends Resource
 {
@@ -26,7 +29,20 @@ class SignatoriesResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('employee_name')
+                    ->label('Signatory Name')
+                    ->required(),
+                TextInput::make('suffix')
+                    ->label('Suffix'),
+                TextInput::make('employee_designation')
+                    ->label('Designation'),
+                Select::make('status')
+                    ->label('Employee Type')
+                    ->options([
+                        1 => 'Permanent',
+                        0 => 'COS/JO',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -34,7 +50,17 @@ class SignatoriesResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('employee_name')
+                    ->label('Signatory Name')
+                    ->searchable()
+                    ->sortable()
+                    ->getStateUsing(function ($record) {
+                        return $record->employee_name . ($record->suffix ? ', ' . $record->suffix : '');
+                    }),
+                TextColumn::make('employee_designation')
+                    ->label('Designation')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //

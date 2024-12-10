@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
-            $table->string('employee_name', 255);           //e.g. Marc Angelo A. Galan
-            $table->string('suffix', 10);                   //e.g. PhD.
-            $table->string('employee_designation', 100);    //e.g. University Registrar, Registrar IV
-            $table->boolean('status');                              //e.g. 1 - Permanent, 0 - COS/JO
+            $table->string('employee_name', 255);                           //e.g. Marc Angelo A. Galan
+            $table->string('suffix', 10);//->nullable();                    e.g. PhD. NOW NULLABLE 12-10-2024
+            $table->string('employee_designation', 100);//->nullable();     e.g. University Registrar, Registrar IV
+            $table->boolean('status');                                              //e.g. 1 - Permanent, 0 - COS/JO
             $table->softDeletes();
             $table->foreignId('created_by')->constrained('users', 'id');
             $table->foreignId('updated_by')->nullable()->constrained('users', 'id');

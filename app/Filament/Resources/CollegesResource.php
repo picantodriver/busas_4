@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CollegesResource extends Resource
 {
     protected static ?string $model = Colleges::class;
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $navigationGroup = 'Institutional Structure';
 
