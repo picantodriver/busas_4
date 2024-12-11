@@ -13,6 +13,7 @@ class Curricula extends Model
 
     protected $fillable = [
         'acad_year_id',
+        'college_id',
         'curricula_name',
         'program_id',
         'program_major_id',
@@ -20,6 +21,25 @@ class Curricula extends Model
         'updated_by',
     ];
 
+
+
+
+    public function campus()
+    {
+        return $this->belongsTo(Campuses::class, 'campus_id');
+    }
+    public function college()
+    {
+        return $this->belongsTo(Colleges::class);
+    }
+    public function programs()
+    {
+        return $this->belongsTo(Programs::class, 'program_id');
+    }
+    public function programMajor()
+    {
+        return $this->belongsTo(ProgramsMajor::class, 'program_major_id');
+    }
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

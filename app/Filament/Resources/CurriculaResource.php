@@ -10,6 +10,7 @@ use App\Models\AcadTerms;
 use App\Models\Curricula;
 use App\Models\ProgramsMajor;
 use App\Models\Campuses;
+use App\Models\Colleges;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -19,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class CurriculaResource extends Resource
 {
@@ -99,7 +101,12 @@ class CurriculaResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('curricula_name')
+                    ->label('Curriculum'),
+                TextColumn::make('programs.program_name')
+                    ->label('Program'),
+                TextColumn::make('programMajor.program_major_name')
+                    ->label('Program Major'),
             ])
             ->filters([
                 //
