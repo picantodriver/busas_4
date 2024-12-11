@@ -84,7 +84,8 @@ class ProgramsResource extends Resource
                 TextColumn::make('program_abbreviation')
                     ->label('Program Abbreviation'),
                 TextColumn::make('college.college_name')
-                    ->label('College Name'),
+                    ->label('College Name')
+                    ->sortable(),
                 TextColumn::make('programMajors.program_major_name')
                     // ->getStateUsing(function ($record) {
                     //     return $record->programMajors->pluck('program_major_name')->join(', ');

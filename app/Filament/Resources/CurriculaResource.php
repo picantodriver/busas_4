@@ -62,7 +62,7 @@ class CurriculaResource extends Resource
                     ->reactive()
                     ->options(Campuses::all()->pluck('campus_name', 'id'))
                     ->searchable(),
-                    Select::make('program_id')
+                Select::make('program_id')
                     ->label('Select Program')
                     ->required()
                     ->options(function ($get) {
@@ -76,9 +76,22 @@ class CurriculaResource extends Resource
                         return [];
                     })
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $query) => Programs::where('program_name', 'like', "%{$query}%")->get()->pluck('program_name', 'id'))
+                    //->getSearchResultsUsing(fn (string $query) => Programs::where('program_name', 'like', "%{$query}%")->get()->pluck('program_name', 'id'))
                     ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                TextInput::make('curriculum_name')->required(),
+                    Select::make('program_major_id')
+                    ->label('Select Program Major')
+                   // ->required()
+                    ->options(function ($get) {
+                        $programId = $get('program_id');
+                        if ($programId) {
+                            return ProgramsMajor::where('program_id', $programId)->pluck('program_major_name', 'id');
+                        }
+                        return [];
+                    })
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $query) => ProgramsMajor::where('program_major_name', 'like', "%{$query}%")->get()->pluck('program_major_name', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => ProgramsMajor::find($value)?->name ?? 'Unknown Program Major'),
+                TextInput::make('curricula_name')->required(),
                 ]);
     }
 

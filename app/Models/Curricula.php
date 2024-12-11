@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Curricula extends Model
 {
     use UserTracking;
+    use HasFactory;
 
     protected $fillable = [
         'acad_year_id',

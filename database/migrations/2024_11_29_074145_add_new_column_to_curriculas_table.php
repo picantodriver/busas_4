@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('curriculas', function (Blueprint $table) {
             $table->foreignId('program_id')->references('id')->on('programs');
-            $table->foreignId('program_major_id')->references('id')->on('programs_majors')->nullable();
+            $table->foreignId('program_major_id')->nullable()->references('id')->on('programs_majors');
              // Add the new column
         });
     }
