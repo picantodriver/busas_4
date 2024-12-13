@@ -25,7 +25,10 @@ class AcadYears extends Model
     {
         return $this->hasMany(AcadTerms::class, 'acad_year_id');
     }
-
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curricula_id');
+    }
 
     public static function booted()
     {

@@ -24,7 +24,10 @@ class Programs extends Model
     {
         return $this->belongsTo(Colleges::class);
     }
-
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curricula_id');
+    }
     public function programMajors()
     {
         return $this->hasMany(ProgramsMajor::class, 'program_id');

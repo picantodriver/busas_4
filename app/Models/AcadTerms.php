@@ -24,6 +24,10 @@ class AcadTerms extends Model
     {
         return $this->belongsTo(AcadYears::class, 'acad_year_id');
     }
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curricula_id');
+    }
 
     public function creator()
     {

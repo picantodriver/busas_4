@@ -15,19 +15,15 @@ class Courses extends Model
         'descriptive_title',
         'course_code',
         'course_unit',
-        'program_id',
-        'program_major_id',
+        'curricula_id',
         'created_by',
         'updated_by',
     ];
 
-    public function programs()
+    
+    public function curricula()
     {
-        return $this->belongsTo(Programs::class, 'program_id');
-    }
-    public function programMajor()
-    {
-        return $this->belongsTo(ProgramsMajor::class, 'program_major_id');
+        return $this->belongsTo(Curricula::class, 'curricula_id');
     }
     public function creator()
     {

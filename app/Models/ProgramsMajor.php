@@ -23,6 +23,10 @@ class ProgramsMajor extends Model
     {
         return $this->belongsTo(Programs::class, 'program_id');
     }
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curricula_id');
+    }
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

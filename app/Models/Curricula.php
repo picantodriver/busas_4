@@ -40,6 +40,10 @@ class Curricula extends Model
     {
         return $this->belongsTo(ProgramsMajor::class, 'program_major_id');
     }
+    public function courses()
+    {
+        return $this->hasMany(Courses::class, 'curricula_id');
+    }
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

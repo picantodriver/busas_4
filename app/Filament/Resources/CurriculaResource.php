@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Repeater;
 
 class CurriculaResource extends Resource
 {
@@ -48,6 +49,7 @@ class CurriculaResource extends Resource
                 Select::make('acad_term_id')
                     ->label('Select Academic Term')
                     ->required()
+                    ->reactive()
                     ->options(function ($get) {
                         $acadYearId = $get('acad_year_id');
                         if ($acadYearId) {
@@ -57,7 +59,8 @@ class CurriculaResource extends Resource
                     })
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
+                    ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
+                    ->afterStateUpdated(fn ($state, callable $set, callable $get) => $set('curricula_name', self::generateCurriculumName($get))),
                 Select::make('campus_id')
                     ->label('Select Campus')
                     ->required()
@@ -67,6 +70,7 @@ class CurriculaResource extends Resource
                 Select::make('program_id')
                     ->label('Select Program')
                     ->required()
+                    ->reactive()
                     ->options(function ($get) {
                         $campus_id = $get('campus_id');
                         if ($campus_id) {
@@ -79,10 +83,12 @@ class CurriculaResource extends Resource
                     })
                     ->searchable()
                     //->getSearchResultsUsing(fn (string $query) => Programs::where('program_name', 'like', "%{$query}%")->get()->pluck('program_name', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                    Select::make('program_major_id')
+                    ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program')
+                    ->afterStateUpdated(fn ($state, callable $set, callable $get) => $set('curricula_name', self::generateCurriculumName($get))),
+                Select::make('program_major_id')
                     ->label('Select Program Major')
                    // ->required()
+                    ->reactive()
                     ->options(function ($get) {
                         $programId = $get('program_id');
                         if ($programId) {
@@ -92,9 +98,43 @@ class CurriculaResource extends Resource
                     })
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $query) => ProgramsMajor::where('program_major_name', 'like', "%{$query}%")->get()->pluck('program_major_name', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => ProgramsMajor::find($value)?->name ?? 'Unknown Program Major'),
-                TextInput::make('curricula_name')->required(),
+                    ->getOptionLabelUsing(fn ($value) => ProgramsMajor::find($value)?->name ?? 'Unknown Program Major')
+                    ->afterStateUpdated(fn ($state, callable $set, callable $get) => $set('curricula_name', self::generateCurriculumName($get))),
+                TextInput::make('curricula_name')
+                    ->label('Curriculum Name')
+                    ->required()
+                    ->reactive()
+                    ->afterStateHydrated(function ($state, callable $set, callable $get) {
+                        $set('curricula_name', self::generateCurriculumName($get));
+                    }),
+                Repeater::make('courses')
+                    ->relationship('courses')
+                    ->label('Courses')
+                    ->schema([
+                        TextInput::make('course_code')
+                            ->label('Course Code')
+                            ->required(),
+                        TextInput::make('descriptive_title')
+                            ->label('Descriptive Title')
+                            ->required(),
+                        TextInput::make('course_unit')
+                            ->label('Units of Credit')
+                            ->required(),
+                    ])
+                    ->columnSpanFull(),
                 ]);
+    }
+
+    protected static function generateCurriculumName(callable $get): string
+    {
+        $acadTerm = AcadTerms::find($get('acad_term_id'))?->acad_term ?? '';
+        $program = Programs::find($get('program_id'))?->program_name ?? '';
+        $programMajor = ProgramsMajor::find($get('program_major_id'))?->program_major_name ?? '';
+        $curriculumName = $acadTerm . ', ' . $program;
+        if ($programMajor) {
+            $curriculumName .= ', ' . $programMajor;
+        }
+        return $curriculumName;
     }
 
     public static function table(Table $table): Table
