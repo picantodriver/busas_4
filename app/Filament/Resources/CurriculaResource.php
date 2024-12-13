@@ -108,7 +108,21 @@ class CurriculaResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, callable $get) {
                         $set('curricula_name', self::generateCurriculumName($get));
                     }),
-
+                Repeater::make('courses')
+                    ->relationship('courses')
+                    ->label('Courses')
+                    ->required()
+                    ->schema([
+                        TextInput::make('course_code')
+                            ->label('Course Code')
+                            ->required(),
+                        TextInput::make('descriptive_title')
+                            ->label('Descriptive Title')
+                            ->required(),
+                        TextInput::make('course_unit')
+                            ->label('Units of Credit')
+                            ->required()
+                    ])
                 ]);
     }
 
@@ -135,6 +149,18 @@ class CurriculaResource extends Resource
                     ->label('Program'),
                 TextColumn::make('programMajor.program_major_name')
                     ->label('Program Major'),
+                TextColumn::make('courses.course_code')
+                    ->label('Course Code')
+                    ->listWithLineBreaks()
+                    ->bulleted(),
+                TextColumn::make('courses.descriptive_title')
+                    ->label('Descriptive Title')
+                    ->listWithLineBreaks()
+                    ->bulleted(),
+                TextColumn::make('courses.course_unit')
+                    ->label('Units of Credit')
+                    ->listWithLineBreaks()
+                    ->bulleted(),
             ])
             ->filters([
                 //

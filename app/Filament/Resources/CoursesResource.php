@@ -31,6 +31,9 @@ class CoursesResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-paint-brush';
 
+    public $curricula_id;
+    public $courses = [];
+
     public static function form(Form $form): Form
     {
         return $form
@@ -71,11 +74,12 @@ class CoursesResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultGroup('curricula.curricula_name')
         ->columns([
-            TextColumn::make('curricula.curricula_name')
-                ->label('Curriculum')
-                ->searchable()
-                ->sortable(),
+            // TextColumn::make('curricula.curricula_name')
+            //     ->label('Curriculum')
+            //     ->searchable()
+            //     ->sortable(),
             TextColumn::make('course_code')
                 ->label('Course Code')
                 ->searchable()
@@ -84,12 +88,17 @@ class CoursesResource extends Resource
                 ->label('Descriptive Title')
                 ->searchable()
                 ->sortable(),
+            // TextColumn::make('programs.program_name')
+            //     ->label('Program')
+            //     ->searchable()
+            //     ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -97,6 +106,22 @@ class CoursesResource extends Resource
                 ]),
             ]);
     }
+
+    public function submit()
+{
+        $this->validate([
+            'curricula_id' => 'required|exists:curriculas,id',
+            'courses.*.course_code' => 'required|string|max:255',
+            'courses.*.descriptive_title' => 'required|string|max:255',
+            'courses.*.course_unit' => 'required|string|max:255',
+    ]);
+
+        $curricula = Curricula::find($this->curricula_id);
+        $curricula->courses()->createMany($this->courses);
+
+    // Handle form submission
+}
+
 
     public static function getRelations(): array
     {
