@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
+use function Livewire\wrap;
 
 class CurriculaResource extends Resource
 {
@@ -107,21 +108,7 @@ class CurriculaResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, callable $get) {
                         $set('curricula_name', self::generateCurriculumName($get));
                     }),
-                Repeater::make('courses')
-                    ->relationship('courses')
-                    ->label('Courses')
-                    ->schema([
-                        TextInput::make('course_code')
-                            ->label('Course Code')
-                            ->required(),
-                        TextInput::make('descriptive_title')
-                            ->label('Descriptive Title')
-                            ->required(),
-                        TextInput::make('course_unit')
-                            ->label('Units of Credit')
-                            ->required(),
-                    ])
-                    ->columnSpanFull(),
+
                 ]);
     }
 
@@ -142,7 +129,8 @@ class CurriculaResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('curricula_name')
-                    ->label('Curriculum'),
+                    ->label('Curriculum')
+                    ->wrap(),
                 TextColumn::make('programs.program_name')
                     ->label('Program'),
                 TextColumn::make('programMajor.program_major_name')

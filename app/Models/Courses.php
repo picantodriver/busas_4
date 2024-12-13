@@ -12,15 +12,15 @@ class Courses extends Model
     use UserTracking;
 
     protected $fillable = [
+        'curricula_id',
         'descriptive_title',
         'course_code',
         'course_unit',
-        'curricula_id',
         'created_by',
         'updated_by',
     ];
 
-    
+
     public function curricula()
     {
         return $this->belongsTo(Curricula::class, 'curricula_id');

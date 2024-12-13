@@ -42,15 +42,28 @@ class CoursesResource extends Resource
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $query) => Curricula::where('curricula_name', 'like', "%{$query}%")->get()->pluck('curricula_name', 'id'))
                     ->getOptionLabelUsing(fn ($value) => Curricula::find($value)?->curricula_name ?? 'Unknown Curriculum'),
-                TextInput::make('course_code')
-                    ->label('Course Code')
-                    ->required(),
-                TextInput::make('descriptive_title')
-                    ->label('Descriptive Title')
-                    ->required(),
-                TextInput::make('course_unit')
-                    ->label('Units of Credit')
-                    ->required(),
+                Repeater::make('courses')
+                    ->label('Courses')
+                    ->schema([
+                        TextInput::make('course_code')
+                            ->label('Course Code')
+                            ->required(),
+                        TextInput::make('descriptive_title')
+                            ->label('Descriptive Title')
+                            ->required(),
+                        TextInput::make('course_unit')
+                            ->label('Units of Credit')
+                            ->required(),
+                    ])
+                // TextInput::make('course_code')
+                //     ->label('Course Code')
+                //     ->required(),
+                // TextInput::make('descriptive_title')
+                //     ->label('Descriptive Title')
+                //     ->required(),
+                // TextInput::make('course_unit')
+                //     ->label('Units of Credit')
+                //     ->required(),
 
             ]);
     }
@@ -59,39 +72,18 @@ class CoursesResource extends Resource
     {
         return $table
         ->columns([
-            TextColumn::make('curriculum_name')
-                ->label('Curriculum Name')
+            TextColumn::make('curricula.curricula_name')
+                ->label('Curriculum')
                 ->searchable()
                 ->sortable(),
-            TextColumn::make('acadYear.year')
-                ->label('Academic Year')
+            TextColumn::make('course_code')
+                ->label('Course Code')
                 ->searchable()
                 ->sortable(),
-            TextColumn::make('acadTerm.acad_term')
-                ->label('Academic Term')
+            TextColumn::make('descriptive_title')
+                ->label('Descriptive Title')
                 ->searchable()
                 ->sortable(),
-            TextColumn::make('program.program_name')
-                ->label('Program')
-                ->searchable()
-                ->sortable(),
-            TextColumn::make('programMajor.name')
-                ->label('Program Major')
-                ->searchable()
-                ->sortable(),
-            TextColumn::make('college.college_name')
-                ->label('College')
-                ->searchable()
-                ->sortable(),
-            TextColumn::make('campus.campus_name')
-                ->label('Campus')
-                ->searchable()
-                ->sortable(),
-            TextColumn::make('courses')
-                ->label('Courses')
-                ->getStateUsing(function ($record) {
-                    return $record->courses->pluck('course_code')->join(', ');
-                }),
             ])
             ->filters([
                 //
