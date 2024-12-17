@@ -9,6 +9,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,7 +28,12 @@ class StudentsResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('last_name')
+                    ->label("Last Name"),
+                TextInput::make('first_name')
+                    ->label("First Name"),
+                TextInput::make('middle_name')
+                    ->label("Middle Name"),
             ]);
     }
 
