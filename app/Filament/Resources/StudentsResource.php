@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StudentsResource\Pages;
 use App\Filament\Resources\StudentsResource\RelationManagers;
 use App\Models\Students;
+use App\Models\AcadTerms;
+use App\Models\AcadYears;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -16,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Repeater;
 
 class StudentsResource extends Resource
 {
@@ -58,12 +61,47 @@ class StudentsResource extends Resource
                 TextInput::make('gwa')
                     ->label('General Weighted Average')
                     ->required(),
+                TextInput::make('nstp_number')
+                    ->label('NSTP Number')
+                    ->required(),
+        // student's registration information section
+                TextInput::make('students_registration_infos.last_school_attended')
+                    ->required()
+                    ->label('Last School Attended (High School/College)'),
+                TextInput::make('students_registration_infos.last_year_attended')
+                        ->label('Last Year Attended (Date graduated/last attended)')
+                        ->required(),
+                TextInput::make('students_registration_infos.category')
+                    ->label('Category')
+                    ->required(),
+                Select::make('acad_year_id')
+                    ->label('Select Academic Year')
+                    ->required()
+                    ->options(AcadYears::all()->pluck('year', 'id'))
+                    ->searchable()
+                    ->reactive()
+                    ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+                Select::make('acad_term_id')
+                    ->label('Select Academic Term')
+                    ->required()
+                    ->reactive()
+                    ->options(function ($get) {
+                        $acadYearId = $get('acad_year_id');
+                        if ($acadYearId) {
+                            return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                        }
+                        return [];
+                    })
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
+                    ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
         // student's graduation information section
                     DatePicker::make('graduation_date')
                         ->label('Date of Graduation')
                         ->required(),
                     TextInput::make('board_approval')
-                        ->label('Special Order Number')
+                        ->label('Special Order Number (Board Resolution)')
                         ->required(),
                     Select::make('latin_honor')
                         ->label('Latin Honor')
@@ -83,7 +121,7 @@ class StudentsResource extends Resource
                     ->label('General Weighted Average')
                     ->required(),
         // student's grades and ratings for subjects taken
-                
+
             ]);
     }
 
