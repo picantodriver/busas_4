@@ -29,6 +29,7 @@ class StudentsResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+        // main student information section
             ->schema([
                 TextInput::make('last_name')
                     ->label("Last Name"),
@@ -54,6 +55,32 @@ class StudentsResource extends Resource
                 TextInput::make('birthplace')
                     ->label('Place of Birth')
                     ->required(),
+        // student's graduation information section
+                    DatePicker::make('graduation_date')
+                        ->label('Date of Graduation')
+                        ->required(),
+                    TextInput::make('board_approval')
+                        ->label('Special Order Number')
+                        ->required(),
+                    Select::make('latin_honor')
+                        ->label('Latin Honor')
+                        ->options([
+                            'Cum Laude' => 'Cum Laude',
+                            'Magna Cum Laude' => 'Magna Cum Laude',
+                            'Summa Cum Laude' => 'Summa Cum Laude',
+                            'Academic Distinction' => 'Academic Distinction',
+                            'With Honor' => 'With Honor',
+                            'With High Honor' => 'With High Honor',
+                            'With Highest Honor' => 'With Highest Honor',
+                    ]),
+                // TextInput::make('nstp_number')
+                //     ->label('Student NSTP Number')
+                //     ->required(),
+                TextInput::make('gwa')
+                    ->label('General Weighted Average')
+                    ->required(),
+        // student's grades and ratings for subjects taken
+                Repeater::make('')
             ]);
     }
 
