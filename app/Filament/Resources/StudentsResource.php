@@ -6,6 +6,8 @@ use App\Filament\Resources\StudentsResource\Pages;
 use App\Filament\Resources\StudentsResource\RelationManagers;
 use App\Models\Students;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -34,6 +36,24 @@ class StudentsResource extends Resource
                     ->label("First Name"),
                 TextInput::make('middle_name')
                     ->label("Middle Name"),
+                TextInput::make('suffix')
+                    ->label("Suffix"),
+                Select::make('sex')
+                    ->label('Sex')
+                    ->options([
+                        'M' => 'Male',
+                        'F' => 'Female',
+                    ])
+                    ->required(),
+                TextInput::make('address')
+                    ->label("Address")
+                    ->required(),
+                DatePicker::make('birthdate')
+                    ->label("Date of Birth")
+                    ->required(),
+                TextInput::make('birthplace')
+                    ->label('Place of Birth')
+                    ->required(),
             ]);
     }
 
@@ -41,7 +61,38 @@ class StudentsResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('last_name')
+                    ->label('Last Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('first_name')
+                    ->label('First Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('middle_name')
+                    ->label('Middle Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('suffix')
+                    ->label('Suffix')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('sex')
+                    ->label('Sex')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('address')
+                    ->label('Address')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('birthdate')
+                    ->label('Date of Birth')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('birthplace')
+                    ->label('Place of Birth')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
