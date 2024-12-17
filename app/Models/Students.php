@@ -33,4 +33,18 @@ class Students extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function graduationInfos()
+    {
+        return $this->hasMany(StudentsGraduationInfos::class, 'student_id');
+    }
+
+    public function records()
+    {
+        return $this->hasMany(StudentsRecords::class, 'student_id');
+    }
+
+    public function registrationInfos()
+    {
+        return $this->hasMany(StudentsRegistrationInfos::class, 'student_id');
+    }
 };
