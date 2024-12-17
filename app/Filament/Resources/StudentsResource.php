@@ -55,6 +55,9 @@ class StudentsResource extends Resource
                 TextInput::make('birthplace')
                     ->label('Place of Birth')
                     ->required(),
+                TextInput::make('gwa')
+                    ->label('General Weighted Average')
+                    ->required(),
         // student's graduation information section
                     DatePicker::make('graduation_date')
                         ->label('Date of Graduation')
@@ -80,7 +83,7 @@ class StudentsResource extends Resource
                     ->label('General Weighted Average')
                     ->required(),
         // student's grades and ratings for subjects taken
-                Repeater::make('')
+                
             ]);
     }
 

@@ -21,7 +21,9 @@ class Students extends Model
         'sex',
         'address',
         'birthdate',
-        'birthplace'
+        'birthplace',
+        'gwa',
+        'nstp_number',
     ];
 
     public function creator()

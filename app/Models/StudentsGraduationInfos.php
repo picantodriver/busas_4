@@ -17,8 +17,6 @@ class StudentsGraduationInfos extends Model
         'graduation_date',
         'board_approval',
         'latin_honor',
-        'nstp_number',
-        'gwa',
     ];
 
     public function student()
