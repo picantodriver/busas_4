@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CoursesResource extends Resource
 {
     protected static ?string $model = Courses::class;
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $navigationGroup = 'Academic Structure';
 
