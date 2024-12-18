@@ -19,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 
 class StudentsResource extends Resource
 {
@@ -34,69 +35,80 @@ class StudentsResource extends Resource
         return $form
         // main student information section
             ->schema([
-                TextInput::make('last_name')
-                    ->label("Last Name"),
-                TextInput::make('first_name')
-                    ->label("First Name"),
-                TextInput::make('middle_name')
-                    ->label("Middle Name"),
-                TextInput::make('suffix')
-                    ->label("Suffix"),
-                Select::make('sex')
-                    ->label('Sex')
-                    ->options([
-                        'M' => 'Male',
-                        'F' => 'Female',
-                    ])
-                    ->required(),
-                TextInput::make('address')
-                    ->label("Address")
-                    ->required(),
-                DatePicker::make('birthdate')
-                    ->label("Date of Birth")
-                    ->required(),
-                TextInput::make('birthplace')
-                    ->label('Place of Birth')
-                    ->required(),
-                TextInput::make('gwa')
-                    ->label('General Weighted Average')
-                    ->required(),
-                TextInput::make('nstp_number')
-                    ->label('NSTP Number')
-                    ->required(),
+                Section::make('General Student Information')
+                    ->description("Enter the student's general information.")
+                    ->schema([
+                        TextInput::make('last_name')
+                            ->label("Last Name"),
+                        TextInput::make('first_name')
+                            ->label("First Name"),
+                        TextInput::make('middle_name')
+                            ->label("Middle Name"),
+                        TextInput::make('suffix')
+                            ->label("Suffix"),
+                        Select::make('sex')
+                            ->label('Sex')
+                            ->options([
+                                'M' => 'Male',
+                                'F' => 'Female',
+                            ])
+                            ->required(),
+                        TextInput::make('address')
+                            ->label("Address")
+                            ->required(),
+                        DatePicker::make('birthdate')
+                            ->label("Date of Birth")
+                            ->required(),
+                        TextInput::make('birthplace')
+                            ->label('Place of Birth')
+                            ->required(),
+                        TextInput::make('gwa')
+                            ->label('General Weighted Average')
+                            ->required(),
+                        TextInput::make('nstp_number')
+                            ->label('NSTP Number')
+                            ->required(),
+                            ]),
         // student's registration information section
-                TextInput::make('students_registration_infos.last_school_attended')
-                    ->required()
-                    ->label('Last School Attended (High School/College)'),
-                TextInput::make('students_registration_infos.last_year_attended')
+                Section::make('Student Registration Information')
+                    ->description("Enter the student's registration information.")
+                    ->schema([
+                    TextInput::make('students_registration_infos.last_school_attended')
+                        ->required()
+                        ->label('Last School Attended (High School/College)'),
+                    TextInput::make('students_registration_infos.last_year_attended')
                         ->label('Last Year Attended (Date graduated/last attended)')
                         ->required(),
-                TextInput::make('students_registration_infos.category')
-                    ->label('Category')
-                    ->required(),
-                Select::make('acad_year_id')
-                    ->label('Select Academic Year')
-                    ->required()
-                    ->options(AcadYears::all()->pluck('year', 'id'))
-                    ->searchable()
-                    ->reactive()
-                    ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-                Select::make('acad_term_id')
-                    ->label('Select Academic Term (Date/Semester admitted)')
-                    ->required()
-                    ->reactive()
-                    ->options(function ($get) {
-                        $acadYearId = $get('acad_year_id');
-                        if ($acadYearId) {
-                            return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
-                        }
-                        return [];
-                    })
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
+                    TextInput::make('students_registration_infos.category')
+                        ->label('Category')
+                        ->required(),
+                    Select::make('acad_year_id')
+                        ->label('Select Academic Year')
+                        ->required()
+                        ->options(AcadYears::all()->pluck('year', 'id'))
+                        ->searchable()
+                        ->reactive()
+                        ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
+                        ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+                    Select::make('acad_term_id')
+                        ->label('Select Academic Term (Date/Semester admitted)')
+                        ->required()
+                        ->reactive()
+                        ->options(function ($get) {
+                            $acadYearId = $get('acad_year_id');
+                                if ($acadYearId) {
+                                    return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                                }
+                                return [];
+                            })
+                        ->searchable()
+                        ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
+                        ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
+                ]),
         // student's graduation information section
+                Section::make('Student Graduation Information')
+                    ->description("Enter the student's graduation information.")
+                    ->schema([
                     DatePicker::make('graduation_date')
                         ->label('Date of Graduation')
                         ->required(),
@@ -114,12 +126,17 @@ class StudentsResource extends Resource
                             'With High Honor' => 'With High Honor',
                             'With Highest Honor' => 'With Highest Honor',
                     ]),
-                // TextInput::make('nstp_number')
-                //     ->label('Student NSTP Number')
-                //     ->required(),
-                TextInput::make('gwa')
-                    ->label('General Weighted Average')
+                Select::make('degree_attained')
+                    ->label('Degree Attained')
+                    ->options([
+                        "Bachelor's Degree" => "Bachelor's Degree",
+                        "Master's Degree" => "Master's Degree",
+                        'Doctorate Degree' => 'Doctorate Degree',
+                    ]),
+                TextInput::make('dates_of_attendance')
+                    ->label('Dates of Attendance (Month Year - Month')
                     ->required(),
+                ])
         // student's grades and ratings for subjects taken
 
             ]);
