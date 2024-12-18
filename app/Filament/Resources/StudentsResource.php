@@ -83,7 +83,7 @@ class StudentsResource extends Resource
                     ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
                     ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
                 Select::make('acad_term_id')
-                    ->label('Select Academic Term')
+                    ->label('Select Academic Term (Date/Semester admitted)')
                     ->required()
                     ->reactive()
                     ->options(function ($get) {
