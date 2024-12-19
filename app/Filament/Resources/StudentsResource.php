@@ -33,7 +33,7 @@ class StudentsResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        // main student information section
+        // main student information section - table: students
             ->schema([
                 Section::make('General Student Information')
                     ->description("Enter the student's general information.")
@@ -69,75 +69,76 @@ class StudentsResource extends Resource
                             ->label('NSTP Number')
                             ->required(),
                             ]),
-        // student's registration information section
+        // student's registration information section - table: students_registration_infos
                 Section::make('Student Registration Information')
                     ->description("Enter the student's registration information.")
                     ->schema([
-                    TextInput::make('students_registration_infos.last_school_attended')
-                        ->required()
-                        ->label('Last School Attended (High School/College)'),
-                    TextInput::make('students_registration_infos.last_year_attended')
-                        ->label('Last Year Attended (Date graduated/last attended)')
-                        ->required(),
-                    TextInput::make('students_registration_infos.category')
-                        ->label('Category')
-                        ->required(),
-                    Select::make('acad_year_id')
-                        ->label('Select Academic Year')
-                        ->required()
-                        ->options(AcadYears::all()->pluck('year', 'id'))
-                        ->searchable()
-                        ->reactive()
-                        ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
-                        ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-                    Select::make('acad_term_id')
-                        ->label('Select Academic Term (Date/Semester admitted)')
-                        ->required()
-                        ->reactive()
-                        ->options(function ($get) {
-                            $acadYearId = $get('acad_year_id');
-                                if ($acadYearId) {
-                                    return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
-                                }
-                                return [];
-                            })
-                        ->searchable()
-                        ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
-                        ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
-                ]),
-        // student's graduation information section
+                        TextInput::make('students_registration_infos.last_school_attended')
+                            ->required()
+                            ->label('Last School Attended (High School/College)'),
+                         TextInput::make('students_registration_infos.last_year_attended')
+                            ->label('Last Year Attended (Date graduated/last attended)')
+                            ->required(),
+                        TextInput::make('students_registration_infos.category')
+                            ->label('Category')
+                            ->required(),
+                        Select::make('acad_year_id')
+                            ->label('Select Academic Year')
+                            ->required()
+                            ->options(AcadYears::all()->pluck('year', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
+                            ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+                        Select::make('acad_term_id')
+                            ->label('Select Academic Term (Date/Semester admitted)')
+                            ->required()
+                            ->reactive()
+                            ->options(function ($get) {
+                                $acadYearId = $get('acad_year_id');
+                                    if ($acadYearId) {
+                                        return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                                    }
+                                    return [];
+                                })
+                            ->searchable()
+                            ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
+                            ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
+                    ]),
+        // student's graduation information section - table: students_graduation_infos
                 Section::make('Student Graduation Information')
                     ->description("Enter the student's graduation information.")
                     ->schema([
-                    DatePicker::make('graduation_date')
-                        ->label('Date of Graduation')
-                        ->required(),
-                    TextInput::make('board_approval')
-                        ->label('Special Order Number (Board Resolution)')
-                        ->required(),
-                    Select::make('latin_honor')
-                        ->label('Latin Honor')
-                        ->options([
-                            'Cum Laude' => 'Cum Laude',
-                            'Magna Cum Laude' => 'Magna Cum Laude',
-                            'Summa Cum Laude' => 'Summa Cum Laude',
-                            'Academic Distinction' => 'Academic Distinction',
-                            'With Honor' => 'With Honor',
-                            'With High Honor' => 'With High Honor',
-                            'With Highest Honor' => 'With Highest Honor',
-                    ]),
-                Select::make('degree_attained')
-                    ->label('Degree Attained')
-                    ->options([
-                        "Bachelor's Degree" => "Bachelor's Degree",
-                        "Master's Degree" => "Master's Degree",
-                        'Doctorate Degree' => 'Doctorate Degree',
-                    ]),
-                TextInput::make('dates_of_attendance')
-                    ->label('Dates of Attendance (Month Year - Month')
-                    ->required(),
-                ])
-        // student's grades and ratings for subjects taken
+                        DatePicker::make('graduation_date')
+                            ->label('Date of Graduation')
+                            ->required(),
+                        TextInput::make('board_approval')
+                            ->label('Special Order Number (Board Resolution)')
+                            ->required(),
+                        Select::make('latin_honor')
+                            ->label('Latin Honor')
+                            ->options([
+                                'Cum Laude' => 'Cum Laude',
+                                'Magna Cum Laude' => 'Magna Cum Laude',
+                                'Summa Cum Laude' => 'Summa Cum Laude',
+                                'Academic Distinction' => 'Academic Distinction',
+                                'With Honor' => 'With Honor',
+                                'With High Honor' => 'With High Honor',
+                                'With Highest Honor' => 'With Highest Honor',
+                            ]),
+                        Select::make('degree_attained')
+                            ->label('Degree Attained')
+                            ->options([
+                                "Bachelor's Degree" => "Bachelor's Degree",
+                                "Master's Degree" => "Master's Degree",
+                                'Doctorate Degree' => 'Doctorate Degree',
+                            ]),
+                        TextInput::make('dates_of_attendance')
+                            ->label('Dates of Attendance (Month Year - Month')
+                            ->required(),
+                    ])
+        // student's grades and ratings for subjects taken - table: students_records
+
 
             ]);
     }
@@ -203,8 +204,8 @@ class StudentsResource extends Resource
     {
         return [
             'index' => Pages\ListStudents::route('/'),
-            //'create' => Pages\CreateStudents::route('/create'),
-            //'edit' => Pages\EditStudents::route('/{record}/edit'),
+            'create' => Pages\CreateStudents::route('/create'),
+            'edit' => Pages\EditStudents::route('/{record}/edit'),
         ];
     }
 }
