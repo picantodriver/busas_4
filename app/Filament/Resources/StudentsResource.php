@@ -69,6 +69,42 @@ class StudentsResource extends Resource
                             ->label('NSTP Number')
                             ->required(),
                             ]),
+        // student's graduation information section - table: students_graduation_infos
+                Section::make('Student Graduation Information')
+                    ->description("Enter the student's graduation information.")
+                    ->schema([
+                        DatePicker::make('students_graduation_infos.graduation_date')
+                            ->label('Date of Graduation')
+                            ->required(),
+                        TextInput::make('students_graduation_infos.board_approval')
+                            ->label('Special Order Number (Board Resolution)')
+                            ->required(),
+                        Select::make('students_graduation_infos.latin_honor')
+                            ->label('Latin Honor')
+                            ->options([
+                                'Cum Laude' => 'Cum Laude',
+                                'Magna Cum Laude' => 'Magna Cum Laude',
+                                'Summa Cum Laude' => 'Summa Cum Laude',
+                                'Academic Distinction' => 'Academic Distinction',
+                                'With Honor' => 'With Honor',
+                                'With High Honor' => 'With High Honor',
+                                'With Highest Honor' => 'With Highest Honor',
+                                ]),
+                        Select::make('students_graduation_infos.degree_attained')
+                            ->label('Degree Attained')
+                            ->options([
+                                "Bachelor's Degree" => "Bachelor's Degree",
+                                "Master's Degree" => "Master's Degree",
+                                'Doctorate Degree' => 'Doctorate Degree',
+                                ]),
+                        TextInput::make('students_graduation_infos.dates_of_attendance')
+                            ->label('Dates of Attendance (Month Year - Month Year)')
+                            ->required(),
+                                ]),
+
+        // student's grades and ratings for subjects taken - table: students_records
+
+
         // student's registration information section - table: students_registration_infos
                 Section::make('Student Registration Information')
                     ->description("Enter the student's registration information.")
@@ -105,39 +141,8 @@ class StudentsResource extends Resource
                             ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
                             ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
                     ]),
-        // student's graduation information section - table: students_graduation_infos
-                Section::make('Student Graduation Information')
-                    ->description("Enter the student's graduation information.")
-                    ->schema([
-                        DatePicker::make('graduation_date')
-                            ->label('Date of Graduation')
-                            ->required(),
-                        TextInput::make('board_approval')
-                            ->label('Special Order Number (Board Resolution)')
-                            ->required(),
-                        Select::make('latin_honor')
-                            ->label('Latin Honor')
-                            ->options([
-                                'Cum Laude' => 'Cum Laude',
-                                'Magna Cum Laude' => 'Magna Cum Laude',
-                                'Summa Cum Laude' => 'Summa Cum Laude',
-                                'Academic Distinction' => 'Academic Distinction',
-                                'With Honor' => 'With Honor',
-                                'With High Honor' => 'With High Honor',
-                                'With Highest Honor' => 'With Highest Honor',
-                            ]),
-                        Select::make('degree_attained')
-                            ->label('Degree Attained')
-                            ->options([
-                                "Bachelor's Degree" => "Bachelor's Degree",
-                                "Master's Degree" => "Master's Degree",
-                                'Doctorate Degree' => 'Doctorate Degree',
-                            ]),
-                        TextInput::make('dates_of_attendance')
-                            ->label('Dates of Attendance (Month Year - Month')
-                            ->required(),
-                    ])
-        // student's grades and ratings for subjects taken - table: students_records
+
+
 
 
             ]);
