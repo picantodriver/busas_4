@@ -23,7 +23,7 @@ class StudentsGraduationInfos extends Model
 
     public function student()
     {
-        return $this->belongsTo(Students::class, 'student_id');
+        return $this->hasMany(Students::class, 'student_id');
     }
     public function creator()
     {

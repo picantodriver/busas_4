@@ -17,6 +17,7 @@ class StudentsGraduationInfosResource extends Resource
 {
     protected static ?string $model = StudentsGraduationInfos::class;
     protected static ?string $navigationGroup = 'Student Information';
+    protected static bool $shouldRegisterNavigation = false;
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 

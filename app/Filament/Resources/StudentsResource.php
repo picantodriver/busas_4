@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use App\Models\StudentsGraduationInfos;
 
 class StudentsResource extends Resource
 {
@@ -102,45 +103,45 @@ class StudentsResource extends Resource
                             ->required(),
                                 ]),
 
-        // student's grades and ratings for subjects taken - table: students_records
+        // // student's grades and ratings for subjects taken - table: students_records
 
 
-        // student's registration information section - table: students_registration_infos
-                Section::make('Student Registration Information')
-                    ->description("Enter the student's registration information.")
-                    ->schema([
-                        TextInput::make('students_registration_infos.last_school_attended')
-                            ->required()
-                            ->label('Last School Attended (High School/College)'),
-                         TextInput::make('students_registration_infos.last_year_attended')
-                            ->label('Last Year Attended (Date graduated/last attended)')
-                            ->required(),
-                        TextInput::make('students_registration_infos.category')
-                            ->label('Category')
-                            ->required(),
-                        Select::make('acad_year_id')
-                            ->label('Select Academic Year')
-                            ->required()
-                            ->options(AcadYears::all()->pluck('year', 'id'))
-                            ->searchable()
-                            ->reactive()
-                            ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
-                            ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-                        Select::make('acad_term_id')
-                            ->label('Select Academic Term (Date/Semester admitted)')
-                            ->required()
-                            ->reactive()
-                            ->options(function ($get) {
-                                $acadYearId = $get('acad_year_id');
-                                    if ($acadYearId) {
-                                        return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
-                                    }
-                                    return [];
-                                })
-                            ->searchable()
-                            ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
-                            ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
-                    ]),
+        // // student's registration information section - table: students_registration_infos
+        //         Section::make('Student Registration Information')
+        //             ->description("Enter the student's registration information.")
+        //             ->schema([
+        //                 TextInput::make('students_registration_infos.last_school_attended')
+        //                     ->required()
+        //                     ->label('Last School Attended (High School/College)'),
+        //                  TextInput::make('students_registration_infos.last_year_attended')
+        //                     ->label('Last Year Attended (Date graduated/last attended)')
+        //                     ->required(),
+        //                 TextInput::make('students_registration_infos.category')
+        //                     ->label('Category')
+        //                     ->required(),
+        //                 Select::make('acad_year_id')
+        //                     ->label('Select Academic Year')
+        //                     ->required()
+        //                     ->options(AcadYears::all()->pluck('year', 'id'))
+        //                     ->searchable()
+        //                     ->reactive()
+        //                     ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
+        //                     ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+        //                 Select::make('acad_term_id')
+        //                     ->label('Select Academic Term (Date/Semester admitted)')
+        //                     ->required()
+        //                     ->reactive()
+        //                     ->options(function ($get) {
+        //                         $acadYearId = $get('acad_year_id');
+        //                             if ($acadYearId) {
+        //                                 return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+        //                             }
+        //                             return [];
+        //                         })
+        //                     ->searchable()
+        //                     ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
+        //                     ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
+        //             ]),
 
 
 
@@ -213,4 +214,16 @@ class StudentsResource extends Resource
             'edit' => Pages\EditStudents::route('/{record}/edit'),
         ];
     }
+
+    // protected function afterSave($record)
+    // {
+    //     StudentsGraduationInfos::create([
+    //         'student_id' => $record->id,
+    //         'graduation_date' => $record->graduation_date,
+    //         'board_approval' => $record->board_approval,
+    //         'latin_honor' => $record->latin_honor,
+    //         'degree_attained' => $record->degree_attained,
+    //         'dates_of_attendance' => $record->dates_of_attendance,
+    //     ]);
+    // }
 }

@@ -20,7 +20,7 @@ class StudentsRecords extends Model
 
     public function student()
     {
-        return $this->belongsTo(Students::class, 'student_id');
+        return $this->HasMany(Students::class, 'student_id');
     }
     public function creator()
     {
