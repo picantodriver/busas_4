@@ -73,6 +73,7 @@ class StudentsResource extends Resource
                             ]),
         // student's graduation information section - table: students_graduation_infos
                 Section::make('Student Graduation Information')
+                    ->relationship('graduationInfos')
                     ->description("Enter the student's graduation information.")
                     ->schema([
                         DatePicker::make('graduation_date')
@@ -110,6 +111,7 @@ class StudentsResource extends Resource
         // student's registration information section - table: students_registration_infos
                 Section::make('Student Registration Information')
                     ->description("Enter the student's registration information.")
+                    ->relationship('registrationInfos')
                     ->schema([
                         TextInput::make('last_school_attended')
                             ->required()

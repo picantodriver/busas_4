@@ -47,6 +47,6 @@ class Students extends Model
 
     public function registrationInfos()
     {
-        return $this->hasMany(StudentsRegistrationInfos::class, 'student_id');
+        return $this->hasOne(StudentsRegistrationInfos::class, 'student_id');
     }
 };
