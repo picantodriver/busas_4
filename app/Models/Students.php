@@ -24,16 +24,6 @@ class Students extends Model
         'birthplace',
         'gwa',
         'nstp_number',
-        'graduation_date',
-        'board_approval',
-        'latin_honor',
-        'degree_attained',
-        'dates_of_attendance',
-        'final_grade',
-        'removal_rating',
-        'last_school_attended',
-        'last_year_attended',
-        'category',
     ];
 
     public function creator()
