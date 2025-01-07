@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Split;
+
 use function Livewire\wrap;
 
 class CurriculaResource extends Resource
@@ -113,16 +115,24 @@ class CurriculaResource extends Resource
                     ->label('Courses')
                     ->required()
                     ->schema([
-                        TextInput::make('course_code')
-                            ->label('Course Code')
-                            ->required(),
-                        TextInput::make('descriptive_title')
-                            ->label('Descriptive Title')
-                            ->required(),
-                        TextInput::make('course_unit')
-                            ->label('Units of Credit')
-                            ->required()
+                        Split::make([
+                            TextInput::make('course_code')
+                                ->label('Course Code')
+                                ->required()
+                                ->grow(false),
+                            TextInput::make('descriptive_title')
+                                ->label('Descriptive Title')
+                                ->required()
+                                ->grow(true),
+                            TextInput::make('course_unit')
+                                ->label('Units of Credit')
+                                ->required()
+                                ->numeric()
+                                ->grow(false)
+                        ])->from('md')
                     ])
+                    ->grid(1)
+                    ->columnSpanFull()
                 ]);
     }
 
