@@ -105,7 +105,12 @@ class StudentsResource extends Resource
                             ->required(),
                                 ]),
 
-        // student's grades and ratings for subjects taken - table: students_records
+        // // student's grades and ratings for subjects taken - table: students_records
+        //         Section::make('Student Records')
+        //             ->description("Enter the student's taken courses and grades.")
+        //             ->schema([
+        //                 Repeater::make('')
+        //             ])
 
 
         // student's registration information section - table: students_registration_infos

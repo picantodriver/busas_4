@@ -127,7 +127,6 @@ class CurriculaResource extends Resource
                             TextInput::make('course_unit')
                                 ->label('Units of Credit')
                                 ->required()
-                                ->numeric()
                                 ->grow(false)
                         ])->from('md')
                     ])
