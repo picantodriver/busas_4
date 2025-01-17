@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Pink,
+                'primary' => Color::Zinc,
             ])
             ->navigationGroups([
                'Academic Structure',
@@ -58,6 +58,10 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->plugins([
+
             ])
             ->authMiddleware([
                 Authenticate::class,

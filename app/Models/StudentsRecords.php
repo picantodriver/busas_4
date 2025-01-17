@@ -16,6 +16,7 @@ class StudentsRecords extends Model
         'updated_by',
         'final_grade',
         'removal_rating',
+        'is_regular',
     ];
 
     public function student()
@@ -29,5 +30,9 @@ class StudentsRecords extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+    public function course()
+    {
+        return $this->belongsTo(Courses::class, 'course_id');
     }
 }
