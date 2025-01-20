@@ -35,8 +35,7 @@ class AcadYearsController extends Controller
         ]);
 
         return redirect()->route('acad-years.index')->with('success', 'Academic Year created successfully.');
-
-        }
+    }
     /**
      * Display the specified resource.
      */

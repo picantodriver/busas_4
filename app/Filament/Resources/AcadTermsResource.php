@@ -37,15 +37,15 @@ class AcadTermsResource extends Resource
                     ->live()
                     ->label('Select Academic Year')
                     ->required()
-                    ->options(fn () => AcadYears::pluck('year', 'id'))
+                    ->options(fn() => AcadYears::pluck('year', 'id'))
                     ->searchable()
                     ->native(false)
-                    ->getSearchResultsUsing(fn (string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
-                    ->getOptionLabelUsing(fn ($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+                    ->getSearchResultsUsing(fn(string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id'))
+                    ->getOptionLabelUsing(fn($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
                 Select::make('acad_term')
                     ->label('Academic Term')
                     ->required()
-                    ->options(function($get) {
+                    ->options(function ($get) {
                         $acadYear = AcadYears::find($get('acad_year_id'))?->year;
                         return [
                             '1st Semester ' . $acadYear => '1st Semester ' . $acadYear,
@@ -55,7 +55,7 @@ class AcadTermsResource extends Resource
                         ];
                     })
                     ->native(false)
-                    ->visible(fn ($get) => $get('acad_year_id')),
+                    ->visible(fn($get) => $get('acad_year_id')),
                 //TextInput::make('acad_term')->required(),
             ]);
     }
