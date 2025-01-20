@@ -16,7 +16,11 @@ class StudentsRecords extends Model
         'updated_by',
         'final_grade',
         'removal_rating',
+        'student_id',
+        'acad_term_id',
+        'deleted_at',
         'is_regular',
+        'course_id',
     ];
 
     public function student()

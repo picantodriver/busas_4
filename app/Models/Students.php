@@ -24,6 +24,7 @@ class Students extends Model
         'birthplace',
         'gwa',
         'nstp_number',
+        'is_regular',
     ];
 
     public function creator()

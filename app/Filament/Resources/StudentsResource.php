@@ -154,19 +154,10 @@ class StudentsResource extends Resource
                             ->getSearchResultsUsing(fn (string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id'))
                             ->getOptionLabelUsing(fn ($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
                     ]),
-        //student's grades - table: students_records - FOR REGULAR STUDENTS ONLY
-                Section::make('Student Type')
-                    ->schema([
-                        Toggle::make('is_regular')
-                            ->label('Regular Student')
-                            ->default(true),
-        ]),
+        //student's grades - table: students_records
                 Section::make('Student Records')
                     ->schema([
-                        Repeater::make('student_records')
-                            ->label('Student Records')
-                            ->schema([
-                                Select::make('campus_id')
+                        Select::make('campus_id')
                             ->label('Select Campus')
                             ->required()
                             ->reactive()
@@ -178,11 +169,11 @@ class StudentsResource extends Resource
                             ->reactive()
                             ->options(function ($get) {
                                 $campus_id = $get('campus_id');
-                                if ($campus_id) {
-                                    return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
-                                }
-                                return [];
-                            })
+                                    if ($campus_id) {
+                                        return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
+                                        }
+                                    return [];
+                                    })
                             ->searchable(),
                         Select::make('program_id')
                             ->label('Select Program')
@@ -191,11 +182,11 @@ class StudentsResource extends Resource
                             // get programs from the selected college
                             ->options(function ($get) {
                                 $college_id = $get('college_id');
-                                if ($college_id) {
-                                    return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                }
-                                return [];
-                            })
+                                    if ($college_id) {
+                                        return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
+                                        }
+                                    return [];
+                                    })
                             ->searchable()
                             ->getOptionLabelUsing(fn ($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
                         Select::make('program_major_id')
@@ -204,47 +195,58 @@ class StudentsResource extends Resource
                             // get program majors from the selected program
                             ->options(function ($get) {
                                 $program_id = $get('program_id');
-                                if ($program_id) {
-                                    return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                }
-                                return [];
-                            })
+                                    if ($program_id) {
+                                        return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
+                                        }
+                                    return [];
+                                    })
                             ->searchable()
                             ->getOptionLabelUsing(fn ($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-                        Select::make('curricula_id')
-                            ->label('Select Curriculum')
-                            ->required()
-                            ->reactive()
-                            ->options(function ($get) {
-                                $program_id = $get('program_id');
-                                $program_major_id = $get('program_major_id');
-                                if ($program_id && $program_major_id) {
-                                    return Curricula::where('program_id', $program_id)
-                                        ->where('program_major_id', $program_major_id)
-                                        ->pluck('curricula_name', 'id');
-                                } elseif ($program_id) {
-                                    return Curricula::where('program_id', $program_id)
-                                        ->pluck('curricula_name', 'id');
-                                }
-                                return [];
-                            })
-                            ->searchable()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $courses = Courses::where('curricula_id', $state)->get();
-                                    $set('records', $courses->map(function ($course) {
-                                        return [
-                                            'course_id' => $course->id,
-                                            'descriptive_title' => $course->descriptive_title,
-                                            'course_unit' => $course->course_unit,
-                                        ];
-                                    })->toArray());
-                                }
-                            }),
+
+                        //Conditional logic based on the Toggle State
+                        Toggle::make('is_regular')
+                            ->label('Regular Student')
+                            ->default(true)
+                            ->reactive(),
                             Repeater::make('records')
                             ->label('Grades')
                             ->relationship('records')
+                            ->reactive()
+                            ->visible(fn($get) => $get('is_regular'))
                             ->schema([
+                                Select::make('curricula_id')
+                                    ->label('Select Curriculum')
+                                    ->required()
+                                    ->reactive() // Make the Select reactive
+                                    ->options(function ($get) {
+                                        // Fetch the outer selections
+                                        $program_id = $get('program_id');
+                                        $program_major_id = $get('program_major_id');
+
+                                        if ($program_id && $program_major_id) {
+                                            return Curricula::where('program_id', $program_id)
+                                                ->where('program_major_id', $program_major_id)
+                                                ->pluck('curricula_name', 'id');
+                                        } elseif ($program_id) {
+                                            return Curricula::where('program_id', $program_id)
+                                                ->pluck('curricula_name', 'id');
+                                        }
+                                        return [];
+                                    })
+                                    ->searchable()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        // Update records automatically if a curriculum is selected
+                                        if ($state) {
+                                            $courses = Courses::where('curricula_id', $state)->get();
+                                            $set('records', $courses->map(function ($course) {
+                                                return [
+                                                    'course_id' => $course->id,
+                                                    'descriptive_title' => $course->descriptive_title,
+                                                    'course_unit' => $course->course_unit,
+                                                ];
+                                            })->toArray());
+                                        }
+                                    }),
                                 Select::make('course_id')
                                     ->label('Course Code')
                                     ->options(function ($get) {
@@ -261,13 +263,23 @@ class StudentsResource extends Resource
                                         $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
                                     })
                                     ->searchable()
-                                    ->getOptionLabelUsing(fn ($value) => Courses::find($value)?->course_code ?? 'Unknown Course Code')
-                                    ->disabled(),
+                                    ->getOptionLabelUsing(fn($value) => Courses::find($value)?->course_code ?? 'Unknown Course Code'),
                                 TextInput::make('descriptive_title')
                                     ->label('Descriptive Title')
                                     ->disabled(),
-                                TextInput::make('final_grades')
-                                    ->label('Final Grades')
+                                Toggle::make('incomplete')
+                                    ->label('Incomplete')
+                                    ->default(false)
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $set('final_grade', 'INC');
+                                        }
+                                    }),
+                                TextInput::make('final_grade')
+                                    ->live()
+                                    ->label('Final Grade')
+                                    ->readonly(fn($get) => $get('incomplete'))
                                     ->required(),
                                 TextInput::make('removal_rating')
                                     ->label('Removal Rating'),
@@ -276,7 +288,7 @@ class StudentsResource extends Resource
                                     ->disabled(),
                             ])
                             ->columnSpan('full'),
-                    ])
+                  //  ])
                     ])
 
             ]);

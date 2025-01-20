@@ -16,12 +16,12 @@ class CreateStudents extends CreateRecord
     // dd($data);
     $student = static::getModel()::create($data);
 
-    $student->records()->create([
-        'student_id' => $student->id,
-        'final_grade' => $data['final_grade'],
-        'removal_rating' => $data['removal_rating'],
-        'is_regular' => $data['is_regular'],
-    ]);
+    // $student->records()->create([
+    //     'student_id' => $student->id,
+    //     'final_grade' => $data['final_grade'],
+    //     'removal_rating' => $data['removal_rating'],
+    //     'is_regular' => $data['is_regular'],
+    // ]);
 
 
 //     $student->graduationInfos()->create([
