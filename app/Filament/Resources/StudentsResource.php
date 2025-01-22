@@ -119,8 +119,10 @@ class StudentsResource extends Resource
                         )->getOptionLabelUsing(fn($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
                     ]),
 
+                Toggle::make('is_regular')->label('Regular Student')->default(true)->reactive(),
                 // Student's grades - table: students_records
                 Section::make('Student Records')
+                    ->visible(fn($get) => $get('is_regular'))
                     ->schema([
                         Select::make('campus_id')->label('Select Campus')->required()->reactive()->options(
                             Campuses::all()->pluck('campus_name', 'id')
@@ -160,54 +162,63 @@ class StudentsResource extends Resource
                             }
                         )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
 
-                        Toggle::make('is_regular')->label('Regular Student')->default(true)->reactive(),
 
-                        Repeater::make('records_regular')->label('Grades')->reactive()->visible(
-                            fn($get) => $get('is_regular')
-                        )->schema([
-                            Select::make('curricula_id')->label('Select Curriculum')->required()->reactive()->options(
-                                function ($get) {
-                                    $program_id = $get('../../program_id');
-                                    $program_major_id = $get('../../program_major_id');
-                                    if ($program_id && $program_major_id) {
-                                        return Curricula::where('program_id', $program_id)
-                                            ->where('program_major_id', $program_major_id)
-                                            ->pluck('curricula_name', 'id');
-                                    } elseif ($program_id) {
-                                        return Curricula::where('program_id', $program_id)->pluck('curricula_name', 'id');
-                                    }
-                                    return [];
-                                }
-                            )->searchable(),
 
-                            Repeater::make('courses')->label('Courses Taken by Student')->reactive()->schema([
-                                Select::make('course_id')->label('Course Code')->options(
+                        Repeater::make('records_regular')->label('Grades')->reactive()
+                            ->schema([
+                                Select::make('curricula_id')->label('Select Curriculum')->required()->reactive()->options(
                                     function ($get) {
-                                        $curricula_id = $get('../../curricula_id');
-                                        if ($curricula_id) {
-                                            return Courses::where('curricula_id', $curricula_id)->pluck('course_code', 'id');
+                                        $program_id = $get('../../program_id');
+                                        $program_major_id = $get('../../program_major_id');
+                                        if ($program_id && $program_major_id) {
+                                            return Curricula::where('program_id', $program_id)
+                                                ->where('program_major_id', $program_major_id)
+                                                ->pluck('curricula_name', 'id');
+                                        } elseif ($program_id) {
+                                            return Curricula::where('program_id', $program_id)->pluck('curricula_name', 'id');
                                         }
                                         return [];
                                     }
-                                )->reactive()->searchable(),
-                                TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
-                                TextInput::make('final_grade')->label('Final Grade')->required(),
-                                TextInput::make('course_unit')->label('Units of Credit')->disabled(),
-                            ]),
-                        ]),
+                                )->searchable()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $courses = Courses::where('curricula_id', $state)->get();
+                                            $set('records_regular_grades', $courses->map(function ($course) {
+                                                return [
+                                                    'course_code' => $course->course_code,
+                                                    'descriptive_title' => $course->descriptive_title,
+                                                    'course_unit' => $course->course_unit,
+                                                ];
+                                            })->toArray());
+                                        }
+                                    }),
 
-                        Repeater::make('records_irregular')->label('Courses Taken by Irregular Student')->visible(
-                            fn($get) => !$get('is_regular')
-                        )->schema([
-                            Select::make('course_id')->label('Course Code')->options(
-                                Courses::all()->pluck('course_code', 'id')
-                            )->searchable()->reactive(),
-                            TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
-                            TextInput::make('final_grade')->label('Final Grade')->required(),
-                            TextInput::make('removal_rating')->label('Removal Rating'),
-                            TextInput::make('course_unit')->label('Units of Credit')->disabled(),
-                        ]),
-                    ]),
+                                Repeater::make('records_regular_grades')
+                                    ->label('Courses & Grades')
+                                    ->reactive()
+                                    ->schema([
+                                        Select::make('course_code')->label('Course Code')->options(
+                                            function ($get) {
+                                                $curricula_id = $get('curricula_id');
+                                                if ($curricula_id) {
+                                                    return Courses::where('curricula_id', $curricula_id)->pluck('course_code', 'id');
+                                                }
+                                                return [];
+                                            }
+                                        )->reactive()->searchable()
+                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                $course = Courses::find($state);
+                                                $set('descriptive_title', $course ? $course->descriptive_title : 'Unknown Descriptive Title');
+                                                $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
+                                            }),
+                                        TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
+                                        TextInput::make('final_grade')->label('Final Grade')->required(),
+                                        TextInput::make('removal_rating')->label('Removal Rating'),
+                                        TextInput::make('course_unit')->label('Units of Credit')->disabled(),
+                                    ]),
+                            ])
+
+                    ])
             ]);
     }
     public static function table(Table $table): Table
