@@ -29,17 +29,13 @@ class CurriculaAcadTermsResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                //
-            ])
+            ->columns([])
             ->filters([
                 //
             ])
