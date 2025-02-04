@@ -121,7 +121,7 @@ class StudentsResource extends Resource
 
                 Toggle::make('is_regular')->label('Regular Student')->default(true)->reactive(),
                 // Student's grades - table: students_records
-                Section::make('Student Records')
+                Section::make('Student Records (Regular)')
                     ->visible(fn($get) => $get('is_regular'))
                     ->schema([
                         Select::make('campus_id')->label('Select Campus')->required()->reactive()->options(
@@ -216,6 +216,53 @@ class StudentsResource extends Resource
                                         TextInput::make('removal_rating')->label('Removal Rating'),
                                         TextInput::make('course_unit')->label('Units of Credit')->disabled(),
                                     ]),
+                            ])
+
+                    ]),
+                Section::make('Student Records (Irregular)')
+                    ->visible(fn($get) => !$get('is_regular'))
+                    ->schema([
+                        Repeater::make('records_irregular')
+                            ->reactive()
+                            ->schema([
+                                Select::make('campus_id')
+                                    ->label('Select Campus')
+                                    ->required()
+                                    ->reactive()
+                                    ->options(
+                                        Campuses::all()->pluck('campus_name', 'id')
+                                    ),
+                                Select::make('college_id')
+                                    ->label('Select College')
+                                    ->required()
+                                    ->reactive()
+                                    ->options(
+                                        function ($get) {
+                                            $campus_id = $get('campus_id');
+                                            if ($campus_id) {
+                                                return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
+                                            }
+                                            return [];
+                                        }
+                                    )->searchable(),
+                                Select::make('program_id')->label('Select Program')->required()->reactive()->options(
+                                    function ($get) {
+                                        $college_id = $get('college_id');
+                                        if ($college_id) {
+                                            return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
+                                        }
+                                        return [];
+                                    }
+                                )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
+                                Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
+                                    function ($get) {
+                                        $program_id = $get('program_id');
+                                        if ($program_id) {
+                                            return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
+                                        }
+                                        return [];
+                                    }
+                                )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
                             ])
 
                     ])
