@@ -27,7 +27,7 @@ class AcadTermsResource extends Resource
 
     protected static ?string $navigationLabel = 'Academic Terms';
 
-    protected static ?string $navigationIcon = 'heroicon-s-calendar-date-range';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-date-range';
 
     public static function form(Form $form): Form
     {

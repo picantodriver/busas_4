@@ -21,7 +21,7 @@ class StudentsGraduationInfosResource extends Resource
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
-    protected static ?string $navigationIcon = 'heroicon-s-academic-cap';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     public static function form(Form $form): Form
     {

@@ -24,7 +24,7 @@ class AcadYearsResource extends Resource
     //protected static ?int $navigationSort = 1; //set the order in sidebar
     protected static ?string $navigationLabel = 'Academic Years and Terms';
 
-    protected static ?string $navigationIcon = 'heroicon-s-calendar';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
     public static function form(Form $form): Form
     {

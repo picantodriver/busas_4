@@ -24,7 +24,7 @@ class CurriculaAcadTermsResource extends Resource
 
     protected static ?string $navigationLabel = 'Curriculum Academic (REMOVE)';
 
-    protected static ?string $navigationIcon = 'heroicon-s-calendar-days';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
     public static function form(Form $form): Form
     {

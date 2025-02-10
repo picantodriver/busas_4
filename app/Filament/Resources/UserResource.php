@@ -22,7 +22,7 @@ class UserResource extends Resource
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
-    protected static ?string $navigationIcon = 'heroicon-s-users';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {
