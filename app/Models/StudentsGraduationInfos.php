@@ -14,6 +14,7 @@ class StudentsGraduationInfos extends Model
     protected $fillable = [
         'created_by',
         'updated_by',
+        'student_id',
         'graduation_date',
         'board_approval',
         'latin_honor',
@@ -23,7 +24,7 @@ class StudentsGraduationInfos extends Model
 
     public function student()
     {
-        return $this->hasMany(Students::class, 'student_id');
+        return $this->belongsTo(Students::class, 'student_id');
     }
     public function creator()
     {
@@ -33,4 +34,9 @@ class StudentsGraduationInfos extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    // public function students()
+    // {
+    //     return $this->belongsTo(Students::class, 'student_id');
+    // }
 }

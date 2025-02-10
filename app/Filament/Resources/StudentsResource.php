@@ -36,6 +36,8 @@ use App\Models\Campuses;
 use App\Models\Colleges;
 use App\Models\ProgramsMajor;
 use Filament\Infolists\Components\Tabs;
+use Illuminate\Validation\Rule;
+use Filament\Notifications\Notification;
 
 class StudentsResource extends Resource
 {
@@ -67,46 +69,128 @@ class StudentsResource extends Resource
                         TextInput::make('birthplace')->label('Place of Birth')->required(),
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
                         TextInput::make('nstp_number')->label('NSTP Number')->required(),
-                    ]),
+                        ]),
 
-                // Student's graduation information section - table: students_graduation_infos
-                Section::make('Student Graduation Information')
-                    ->relationship('graduationInfos')
-                    ->description("Enter the student's graduation information.")
-                    ->schema([
-                        DatePicker::make('graduation_date')->label('Date of Graduation')->required(),
-                        TextInput::make('board_approval')->label('Special Order Number (Board Resolution)')->required(),
-                        Select::make('latin_honor')->label('Latin Honor')->options([
-                            'Cum Laude' => 'Cum Laude',
-                            'Magna Cum Laude' => 'Magna Cum Laude',
-                            'Summa Cum Laude' => 'Summa Cum Laude',
-                            'Academic Distinction' => 'Academic Distinction',
-                            'With Honor' => 'With Honor',
-                            'With High Honor' => 'With High Honor',
-                            'With Highest Honor' => 'With Highest Honor',
-                        ]),
-                        Select::make('degree_attained')->label('Degree Attained')->options([
-                            "Bachelor's Degree" => "Bachelor's Degree",
-                            "Master's Degree" => "Master's Degree",
-                            'Doctorate Degree' => 'Doctorate Degree',
-                        ]),
-                        TextInput::make('dates_of_attendance')->label('Dates of Attendance (Month Year - Month Year)')->required(),
-                    ]),
+// Student's graduation information section - table: students_graduation_infos
+Section::make('Student Graduation Information')
+    ->relationship('graduationInfos')
+    ->description("Enter the student's graduation information.")
+    ->schema([
+        DatePicker::make('graduation_date')
+            ->label('Date of Graduation')
+            ->required()
+            ->reactive(),
+        TextInput::make('board_approval')
+            ->label('Special Order Number (Board Resolution)')
+            ->required(),
+        Select::make('latin_honor')
+            ->label('Latin Honor')
+            ->options([
+                'Cum Laude' => 'Cum Laude',
+                'Magna Cum Laude' => 'Magna Cum Laude',
+                'Summa Cum Laude' => 'Summa Cum Laude',
+                'Academic Distinction' => 'Academic Distinction',
+                'With Honor' => 'With Honor',
+                'With High Honor' => 'With High Honor',
+                'With Highest Honor' => 'With Highest Honor',
+            ]),
+        Select::make('degree_attained')
+            ->label('Degree Attained')
+            ->options([
+                "Bachelor's Degree" => "Bachelor's Degree",
+                "Master's Degree" => "Master's Degree",
+                'Doctorate Degree' => 'Doctorate Degree',
+            ]),
+
+            //Gumagana Minsan? Di ko knows why :(
+            TextInput::make('dates_of_attendance')
+            ->label('Dates of Attendance (Month Year - Month Year)')
+            ->required()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                $dates = explode(' - ', $state);
+                
+                if (count($dates) == 2) {
+                    try {
+                        $startDate = \Carbon\Carbon::createFromFormat('F Y', trim($dates[0]))->startOfMonth();
+                        $endDate = \Carbon\Carbon::createFromFormat('F Y', trim($dates[1]))->endOfMonth();
+                        $graduationDate = $get('graduation_date');
+        
+                        if ($graduationDate) {
+                            // Ensure the graduation date uses the same format
+                            $graduationDate = \Carbon\Carbon::createFromFormat('Y-m-d', $graduationDate)->startOfMonth();
+                            
+                            // Clone the endDate before adding a year
+                            $validEndDate = (clone $endDate)->addYear();
+        
+                            // Validate graduation date range
+                            if ($graduationDate->lt($startDate) || $graduationDate->gt($validEndDate)) {
+                                Notification::make()
+                                    ->title('Validation Error')
+                                    ->body('The graduation date must be within the dates of attendance or up to 1 year past the end date.')
+                                    ->danger()
+                                    ->send();
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title('Invalid Date Format')
+                            ->body('Please enter the correct date format: "Month Year - Month Year" (e.g., June 2019 - May 2023).')
+                            ->danger()
+                            ->send();
+                    }
+                }
+            })
+    ]),
 
                 // Student's registration information section - table: students_registration_infos
                 Section::make('Student Registration Information')
-                    ->relationship('registrationInfos')
-                    ->description("Enter the student's registration information.")
-                    ->schema([
-                        TextInput::make('last_school_attended')->required()->label('Last School Attended (High School/College)'),
-                        TextInput::make('last_year_attended')->label('Last Year Attended (Date graduated/last attended)')->required(),
-                        TextInput::make('category')->label('Category')->required(),
-                        Select::make('acad_year_id')->label('Select Academic Year')->required()->options(
-                            AcadYears::all()->pluck('year', 'id')
-                        )->searchable()->reactive()->getSearchResultsUsing(
+                ->relationship('registrationInfos')
+                ->description("Enter the student's registration information.")
+                ->schema([
+                    TextInput::make('last_school_attended')
+                        ->required()
+                        ->label('Last School Attended (High School/College)'),
+            
+                    TextInput::make('last_year_attended')
+                        ->label('Last Year Attended (Date graduated/last attended)')
+                        ->required()
+                        ->maxLength(4)
+                        ->numeric(),
+            
+                    Select::make('category')
+                        ->label('Category')
+                        ->options([
+                            'Transferee' => 'Transferee',
+                            'High School Graduate' => 'High School Graduate',
+                            'Senior High School Graduate' => 'Senior High School Graduate',
+                            'College Graduate' => 'College Graduate',
+                            'Others' => 'Others',
+                        ])
+                        ->required()
+                        ->reactive(),
+            
+                    TextInput::make('other_category')
+                        ->label('Specify Other Category')
+                        ->required(fn ($get) => $get('category') === 'Others')
+                        ->visible(fn ($get) => $get('category') === 'Others'),
+            
+                    Select::make('acad_year_id')
+                        ->label('Select Academic Year')
+                        ->required()
+                        ->options(AcadYears::all()->pluck('year', 'id'))
+                        ->searchable()
+                        ->reactive()
+                        ->getSearchResultsUsing(
                             fn(string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id')
-                        )->getOptionLabelUsing(fn($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-                        Select::make('acad_term_id')->label('Select Academic Term (Date/Semester admitted)')->required()->reactive()->options(
+                        )
+                        ->getOptionLabelUsing(fn($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+            
+                    Select::make('acad_term_id')
+                        ->label('Select Academic Term (Date/Semester admitted)')
+                        ->required()
+                        ->reactive()
+                        ->options(
                             function ($get) {
                                 $acadYearId = $get('acad_year_id');
                                 if ($acadYearId) {
@@ -114,165 +198,167 @@ class StudentsResource extends Resource
                                 }
                                 return [];
                             }
-                        )->searchable()->getSearchResultsUsing(
+                        )
+                        ->searchable()
+                        ->getSearchResultsUsing(
                             fn(string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id')
-                        )->getOptionLabelUsing(fn($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
-                    ]),
+                        )
+                        ->getOptionLabelUsing(fn($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
+                        ]), 
+            
 
-                Toggle::make('is_regular')->label('Regular Student')->default(true)->reactive(),
-                // Student's grades - table: students_records
-                Section::make('Student Records (Regular)')
-                    ->visible(fn($get) => $get('is_regular'))
-                    ->schema([
-                        Select::make('campus_id')->label('Select Campus')->required()->reactive()->options(
-                            Campuses::all()->pluck('campus_name', 'id')
-                        )->afterStateUpdated(function ($set) {
-                            $set('college_id', null);
-                            $set('program_id', null);
-                            $set('program_major_id', null);
-                        })->searchable(),
+Toggle::make('is_regular')
+->label('Regular Student')
+->default(true)
+->reactive(),
 
-                        Select::make('college_id')->label('Select College')->required()->reactive()->options(
+// Student's grades - table: students_records
+Section::make('Student Records (Regular)')
+->visible(fn($get) => $get('is_regular'))
+->schema([
+    Select::make('campus_id')
+        ->label('Select Campus')
+        ->required()
+        ->reactive()
+        ->options(Campuses::all()->pluck('campus_name', 'id'))
+        ->afterStateUpdated(function ($set) {
+            $set('college_id', null);
+            $set('program_id', null);
+            $set('program_major_id', null);
+        })
+        ->searchable(),
+
+    Select::make('college_id')
+        ->label('Select College')
+        ->required()
+        ->reactive()
+        ->options(
+            function ($get) {
+                $campus_id = $get('campus_id');
+                if ($campus_id) {
+                    return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
+                }
+                return [];
+            }
+        )
+        ->searchable(),
+
+    Select::make('program_id')
+        ->label('Select Program')
+        ->required()
+        ->reactive()
+        ->options(
+            function ($get) {
+                $college_id = $get('college_id');
+                if ($college_id) {
+                    return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
+                }
+                return [];
+            }
+        )
+        ->searchable()
+        ->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
+
+    Select::make('program_major_id')
+        ->label('Select Program Major')
+        ->reactive()
+        ->options(
+            function ($get) {
+                $program_id = $get('program_id');
+                if ($program_id) {
+                    return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
+                }
+                return [];
+            }
+        )
+        ->searchable()
+        ->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
+
+    Repeater::make('records_regular')
+        ->label('Grades')
+        ->relationship('records')
+        ->reactive()
+        ->schema([
+            Select::make('curricula_id')
+                ->label('Select Curriculum')
+                ->required()
+                ->reactive()
+                ->options(
+                    function ($get) {
+                        $program_id = $get('../../program_id');
+                        $program_major_id = $get('../../program_major_id');
+                        if ($program_id && $program_major_id) {
+                            return Curricula::where('program_id', $program_id)
+                                ->where('program_major_id', $program_major_id)
+                                ->pluck('curricula_name', 'id');
+                        } elseif ($program_id) {
+                            return Curricula::where('program_id', $program_id)->pluck('curricula_name', 'id');
+                        }
+                        return [];
+                    }
+                )
+                ->searchable()
+                ->afterStateUpdated(function ($state, callable $set) {
+                    if ($state) {
+                        $courses = Courses::where('curricula_id', $state)->get();
+                        $set('records_regular_grades', $courses->map(function ($course) {
+                            return [
+                                'course_code' => $course->course_code,
+                                'descriptive_title' => $course->descriptive_title,
+                                'course_unit' => $course->course_unit,
+                            ];
+                        })->toArray());
+                    }
+                }),
+
+            Repeater::make('records_regular_grades')
+                ->label('Courses & Grades')
+                ->reactive()
+                ->schema([
+                    Select::make('course_id')
+                        ->label('Course Code')
+                        ->options(
                             function ($get) {
-                                $campus_id = $get('campus_id');
-                                if ($campus_id) {
-                                    return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
+                                $curricula_id = $get('curricula_id');
+                                if ($curricula_id) {
+                                    return Courses::where('curricula_id', $curricula_id)->pluck('course_code', 'id');
                                 }
                                 return [];
                             }
-                        )->searchable(),
+                        )
+                        ->reactive()
+                        ->searchable()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $course = Courses::find($state);
+                            $set('descriptive_title', $course ? $course->descriptive_title : 'Unknown Descriptive Title');
+                            $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
+                        }),
 
-                        Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                            function ($get) {
-                                $college_id = $get('college_id');
-                                if ($college_id) {
-                                    return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
+                    TextInput::make('descriptive_title')
+                        ->label('Descriptive Title')
+                        ->disabled(),
 
-                        Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
-                            function ($get) {
-                                $program_id = $get('program_id');
-                                if ($program_id) {
-                                    return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
+                    TextInput::make('final_grade')
+                        ->label('Final Grade')
+                        ->required(),
 
+                    TextInput::make('removal_rating')
+                        ->label('Removal Rating'),
 
+                    TextInput::make('course_unit')
+                        ->label('Units of Credit')
+                        ->disabled(),
+                ]),
+        ])
+]),
+        ]);
+}
 
-                        Repeater::make('records_regular')->label('Grades')->reactive()
-                            ->schema([
-                                Select::make('curricula_id')->label('Select Curriculum')->required()->reactive()->options(
-                                    function ($get) {
-                                        $program_id = $get('../../program_id');
-                                        $program_major_id = $get('../../program_major_id');
-                                        if ($program_id && $program_major_id) {
-                                            return Curricula::where('program_id', $program_id)
-                                                ->where('program_major_id', $program_major_id)
-                                                ->pluck('curricula_name', 'id');
-                                        } elseif ($program_id) {
-                                            return Curricula::where('program_id', $program_id)->pluck('curricula_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        if ($state) {
-                                            $courses = Courses::where('curricula_id', $state)->get();
-                                            $set('records_regular_grades', $courses->map(function ($course) {
-                                                return [
-                                                    'course_code' => $course->course_code,
-                                                    'descriptive_title' => $course->descriptive_title,
-                                                    'course_unit' => $course->course_unit,
-                                                ];
-                                            })->toArray());
-                                        }
-                                    }),
-
-                                Repeater::make('records_regular_grades')
-                                    ->label('Courses & Grades')
-                                    ->reactive()
-                                    ->schema([
-                                        Select::make('course_code')->label('Course Code')->options(
-                                            function ($get) {
-                                                $curricula_id = $get('curricula_id');
-                                                if ($curricula_id) {
-                                                    return Courses::where('curricula_id', $curricula_id)->pluck('course_code', 'id');
-                                                }
-                                                return [];
-                                            }
-                                        )->reactive()->searchable()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                $course = Courses::find($state);
-                                                $set('descriptive_title', $course ? $course->descriptive_title : 'Unknown Descriptive Title');
-                                                $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
-                                            }),
-                                        TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
-                                        TextInput::make('final_grade')->label('Final Grade')->required(),
-                                        TextInput::make('removal_rating')->label('Removal Rating'),
-                                        TextInput::make('course_unit')->label('Units of Credit')->disabled(),
-                                    ]),
-                            ])
-
-                    ]),
-                Section::make('Student Records (Irregular)')
-                    ->visible(fn($get) => !$get('is_regular'))
-                    ->schema([
-                        Repeater::make('records_irregular')
-                            ->reactive()
-                            ->schema([
-                                Select::make('campus_id')
-                                    ->label('Select Campus')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        Campuses::all()->pluck('campus_name', 'id')
-                                    ),
-                                Select::make('college_id')
-                                    ->label('Select College')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        function ($get) {
-                                            $campus_id = $get('campus_id');
-                                            if ($campus_id) {
-                                                return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
-                                            }
-                                            return [];
-                                        }
-                                    )->searchable(),
-                                Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                                    function ($get) {
-                                        $college_id = $get('college_id');
-                                        if ($college_id) {
-                                            return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                                Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
-                                    function ($get) {
-                                        $program_id = $get('program_id');
-                                        if ($program_id) {
-                                            return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-                            ])
-
-                    ])
-            ]);
-    }
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('last_name')
+                /*TextColumn::make('last_name')
                     ->label('Last Name')
                     ->searchable()
                     ->sortable(),
@@ -287,8 +373,235 @@ class StudentsResource extends Resource
                 TextColumn::make('suffix')
                     ->label('Suffix')
                     ->searchable()
-                    ->sortable(),
-                TextColumn::make('sex')
+                    ->sortable(),*/
+                /*TextColumn::make('name')
+                    ->label('Name')
+                    ->getStateUsing(fn ($record) => 
+                        "{$record->first_name}" . 
+                        ($record->middle_name ? " {$record->middle_name}" : "") . 
+                        " {$record->last_name}" . 
+                        ($record->suffix ? " {$record->suffix}" : "")
+                    )
+                    ->sortable(query: function ($query, $direction) {
+                        $query->orderBy('first_name', $direction)
+                              ->orderBy('middle_name', $direction)
+                              ->orderBy('last_name', $direction);
+                    })
+                    ->searchable(query: function ($query, $search) {
+                        $query->where(function ($q) use ($search) {
+                            $q->where('first_name', 'like', "%{$search}%")
+                              ->orWhere('middle_name', 'like', "%{$search}%")
+                              ->orWhere('last_name', 'like', "%{$search}%")
+                              ->orWhere('suffix', 'like', "%{$search}%");
+                        });
+                    }),*/
+                    ////////
+                    // TextColumn::make('name')
+                    // ->label('Name')
+                    // ->getStateUsing(fn ($record) => 
+                    //     "{$record->first_name}" . 
+                    //     ($record->middle_name ? " {$record->middle_name}" : "") . 
+                    //     " {$record->last_name}" . 
+                    //     ($record->suffix ? " {$record->suffix}" : "")
+                    // )
+                    // ->sortable(query: function ($query, $direction) {
+                    //     $query->orderBy('first_name', $direction)
+                    //           ->orderBy('middle_name', $direction)
+                    //           ->orderBy('last_name', $direction);
+                    // })
+                    // ->searchable(query: function ($query, $search) {
+                    //     $query->where(function ($q) use ($search) {
+                    //         $q->where('first_name', 'like', "%{$search}%")
+                    //           ->orWhere('middle_name', 'like', "%{$search}%")
+                    //           ->orWhere('last_name', 'like', "%{$search}%")
+                    //           ->orWhere('suffix', 'like', "%{$search}%");
+                    //     });
+                    // }),
+                    // TextColumn::make('course')
+                    // ->label('Program')
+                    // ->getStateUsing(function ($record) {
+                    //     if ($record->curriculum_id) {
+                    //         $curricula = Curricula::find($record->curriculum_id);
+                    //         if ($curricula && str_contains($curricula->curricula_name, ',')) {
+                    //             return trim(explode(',', $curricula->curricula_name)[1]);
+                    //         }
+                    //         return $curricula ? $curricula->curricula_name : 'N/A';
+                    //     }
+                    //     return 'N/A';
+                    // })
+                    // /*->sortable(query: function ($query, $direction) {
+                    //     $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+                    //           ->orderBy('curriculas.curricula_name', $direction);
+                    // })*/
+                    // ->searchable(query: function ($query, $search) {
+                    //     $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+                    //           ->where('curriculas.curricula_name', 'like', "%{$search}%");
+                    // }),
+                    TextColumn::make('name')
+    ->label('Name')
+    ->getStateUsing(fn ($record) => 
+        "{$record->first_name}" . 
+        ($record->middle_name ? " {$record->middle_name}" : "") . 
+        " {$record->last_name}" . 
+        ($record->suffix ? " {$record->suffix}" : "")
+    )
+    ->sortable(query: function ($query, $direction) {
+        $query->orderBy('first_name', $direction)
+              ->orderBy('middle_name', $direction)
+              ->orderBy('last_name', $direction);
+    })
+    ->searchable(query: function ($query, $search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('first_name', 'like', "%{$search}%")
+              ->orWhere('middle_name', 'like', "%{$search}%")
+              ->orWhere('last_name', 'like', "%{$search}%")
+              ->orWhere('suffix', 'like', "%{$search}%");
+        });
+    }),
+TextColumn::make('course')
+    ->label('Course')
+    ->getStateUsing(function ($record) {
+        if ($record->curriculum_id) {
+            $curricula = Curricula::find($record->curriculum_id);
+            if ($curricula && str_contains($curricula->curricula_name, ',')) {
+                return trim(explode(',', $curricula->curricula_name)[1]);
+            }
+            return $curricula ? $curricula->curricula_name : 'N/A';
+        }
+        return 'N/A';
+    })
+    ->sortable(query: function ($query, $direction) {
+        $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+              ->orderBy('curriculas.curricula_name', $direction);
+    })
+    ->searchable(query: function ($query, $search) {
+        $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+              ->where('curriculas.curricula_name', 'like', "%{$search}%");
+    }),
+TextColumn::make('major')
+    ->label('Major')
+    ->getStateUsing(function ($record) {
+        if ($record->curriculum_id) {
+            $curricula = Curricula::find($record->curriculum_id);
+            if ($curricula && $curricula->program_major_id) {
+                $programMajor = ProgramsMajor::find($curricula->program_major_id);
+                return $programMajor ? $programMajor->program_major_name : 'N/A';
+            }
+        }
+        return 'N/A';
+    })
+    ->sortable(query: function ($query, $direction) {
+        $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+              ->leftJoin('programs_major', 'curriculas.program_major_id', '=', 'programs_major.id')
+              ->orderBy('programs_major.program_major_name', $direction);
+    })
+    ->searchable(query: function ($query, $search) {
+        $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+              ->leftJoin('programs_major', 'curriculas.program_major_id', '=', 'programs_major.id')
+              ->where('programs_major.program_major_name', 'like', "%{$search}%");
+    }),
+TextColumn::make('graduation_date')
+    ->label('Date of Graduation')
+    ->getStateUsing(function ($record) {
+        $graduationInfo = $record->graduationInfos()->first();
+        if ($graduationInfo && $graduationInfo->graduation_date) {
+            return date('F d, Y', strtotime($graduationInfo->graduation_date));
+        }
+        return 'N/A';
+    })
+    ->sortable(query: function ($query, $direction) {
+        $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
+              ->orderBy('students_graduation_infos.graduation_date', $direction);
+    })
+    ->searchable(query: function ($query, $search) {
+        $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
+              ->where('students_graduation_infos.graduation_date', 'like', "%{$search}%");
+    }),
+    //                 TextColumn::make('name')
+    //                 ->label('Name')
+    //                 ->getStateUsing(fn ($record) => 
+    //                     "{$record->first_name}" . 
+    //                     ($record->middle_name ? " {$record->middle_name}" : "") . 
+    //                     " {$record->last_name}" . 
+    //                     ($record->suffix ? " {$record->suffix}" : "")
+    //                 )
+    //                 ->sortable(query: function ($query, $direction) {
+    //                     $query->orderBy('first_name', $direction)
+    //                           ->orderBy('middle_name', $direction)
+    //                           ->orderBy('last_name', $direction);
+    //                 })
+    //                 ->searchable(query: function ($query, $search) {
+    //                     $query->where(function ($q) use ($search) {
+    //                         $q->where('first_name', 'like', "%{$search}%")
+    //                           ->orWhere('middle_name', 'like', "%{$search}%")
+    //                           ->orWhere('last_name', 'like', "%{$search}%")
+    //                           ->orWhere('suffix', 'like', "%{$search}%");
+    //                     });
+    //                 }),
+
+    // //                 TextColumn::make('course')    WORKING SEARCH AND SORT BUT COURSE ONLY
+    // // ->label('Program')
+    // // ->getStateUsing(function ($record) {
+    // //     if ($record->curriculum_id) {
+    // //         $curricula = Curricula::find($record->curriculum_id);
+    // //         if ($curricula && str_contains($curricula->curricula_name, ',')) {
+    // //             return trim(explode(',', $curricula->curricula_name)[1]);
+    // //         }
+    // //         return $curricula ? $curricula->curricula_name : 'N/A';
+    // //     }
+    // //     return 'N/A';
+    // // })
+    // // ->sortable(query: function ($query, $direction) {
+    // //     $query->select('students.*', 'curriculas.curricula_name') // Ensure students data is not lost
+    // //           ->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+    // //           ->orderBy('curriculas.curricula_name', $direction);
+    // // })
+    // // ->searchable(query: function ($query, $search) {
+    // //     $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+    // //           ->where('curriculas.curricula_name', 'like', "%{$search}%");
+    // // }),
+
+    // TextColumn::make('graduation_date')
+    //                 ->label('Date of Graduation')
+    //                 ->getStateUsing(function ($record) {
+    //                     $graduationInfo = $record->graduationInfos()->first();
+    //                     if ($graduationInfo && $graduationInfo->graduation_date) {
+    //                         return date('F d, Y', strtotime($graduationInfo->graduation_date));
+    //                     }
+    //                     return 'N/A';
+    //                 })
+    //                 ->sortable(query: function ($query, $direction) {
+    //                     $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
+    //                         ->orderBy('students_graduation_infos.graduation_date', $direction);
+    //                 })
+    //                 ->searchable(query: function ($query, $search) {
+    //                     $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
+    //                         ->where('students_graduation_infos.graduation_date', 'like', "%{$search}%");
+    //                 })
+                    // Added closing bracket for columns array
+                    // TextColumn::make('course')
+                    // ->label('Program')
+                    // ->getStateUsing(function ($record) {
+                    //     if ($record->curriculum_id) {
+                    //         $curricula = Curricula::find($record->curriculum_id);
+                    //         if ($curricula && str_contains($curricula->curricula_name, ',')) {
+                    //             return trim(explode(',', $curricula->curricula_name)[1]);
+                    //         }
+                    //         return $curricula ? $curricula->curricula_name : 'N/A';
+                    //     }
+                    //     return 'N/A';
+                    // })
+                    // /*->sortable(query: function ($query, $direction) {
+                    //     $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+                    //           ->orderBy('curriculas.curricula_name', $direction);
+                    // })*/
+                    // ->searchable(query: function ($query, $search) {
+                    //     $query->leftJoin('curriculas', 'students.curriculum_id', '=', 'curriculas.id')
+                    //           ->where('curriculas.curricula_name', 'like', "%{$search}%");
+                    // }),
+                    
+
+                /*TextColumn::make('sex')
                     ->label('Sex')
                     ->searchable()
                     ->sortable(),
@@ -303,7 +616,7 @@ class StudentsResource extends Resource
                 TextColumn::make('birthplace')
                     ->label('Place of Birth')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable(),*/
             ])
             ->filters([
                 //
