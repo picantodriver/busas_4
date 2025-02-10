@@ -71,7 +71,6 @@ class StudentsResource extends Resource
                             DatePicker::make('birthdate')->label("Date of Birth")->required(),
                         ]),
                         TextInput::make('address')->label("Address")->required(),
-<<<<<<< HEAD
                         Select::make('province')
                             ->label("Province")
                             ->options([
@@ -129,8 +128,6 @@ class StudentsResource extends Resource
 
 
                         DatePicker::make('birthdate')->label("Date of Birth")->required(),
-=======
->>>>>>> 9da2658181ca332813db3f865396ba25d70cc8c3
                         TextInput::make('birthplace')->label('Place of Birth')->required(),
                         Grid::make(2)->schema([
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
