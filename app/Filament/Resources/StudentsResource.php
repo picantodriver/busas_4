@@ -65,6 +65,62 @@ class StudentsResource extends Resource
                             'F' => 'Female',
                         ])->required(),
                         TextInput::make('address')->label("Address")->required(),
+                        Select::make('province')
+                            ->label("Province")
+                            ->options([
+                                'albay' => 'Albay',
+                                'camarines_norte' => 'Camarines Norte',
+                                'camarines_sur' => 'Camarines Sur',
+                                'catanduanes' => 'Catanduanes',
+                                'masbate' => 'Masbate',
+                                'sorsogon' => 'Sorsogon',
+                            ])
+                            ->required()
+                            ->reactive(),
+
+                            Select::make('city')
+                            ->label("City")
+                            ->options(function (callable $get) {
+                                $province = $get('province');
+                        
+                                $cities = [
+                                    'albay' => [
+                                        'legazpi' => 'Legazpi',
+                                        'ligao' => 'Ligao',
+                                        'tabaco' => 'Tabaco',
+                                    ],
+                                    'camarines_norte' => [
+                                        'daet' => 'Daet',
+                                        'vinzons' => 'Vinzons',
+                                        'labo' => 'Labo',
+                                    ],
+                                    'camarines_sur' => [
+                                        'naga' => 'Naga',
+                                        'iriga' => 'Iriga',
+                                        'buhi' => 'Buhi',
+                                    ],
+                                    'catanduanes' => [
+                                        'virac' => 'Virac',
+                                        'san_andres' => 'San Andres',
+                                        'bagamanoc' => 'Bagamanoc',
+                                    ],
+                                    'masbate' => [
+                                        'masbate_city' => 'Masbate City',
+                                        'aroroy' => 'Aroroy',
+                                        'baleno' => 'Baleno',
+                                    ],
+                                    'sorsogon' => [
+                                        'sorsogon_city' => 'Sorsogon City',
+                                        'castilla' => 'Castilla',
+                                        'gubat' => 'Gubat',
+                                    ],
+                                ];
+                        
+                                return $cities[$province] ?? [];
+                            })
+                            ->required(),
+
+
                         DatePicker::make('birthdate')->label("Date of Birth")->required(),
                         TextInput::make('birthplace')->label('Place of Birth')->required(),
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
