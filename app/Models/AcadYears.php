@@ -5,22 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Translation\Command\TranslationTrait;
 
 class AcadYears extends Model
 {
     use HasFactory;
     use UserTracking;
+    use SoftDeletes;
 
     protected $fillable = [
         'year',
         'start_date',
         'end_date',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'deleted_by', // Add deleted_by
     ];
 
+    protected $dates = ['deleted_at'];
 
+    public function deleter()
+    {
+        return $this->belongsTo(User::class, 'deleted_by'); // Track who deleted the record
+    }
     public function acadTerms()
     {
         return $this->hasMany(AcadTerms::class, 'acad_year_id');
@@ -28,6 +37,15 @@ class AcadYears extends Model
     public function curricula()
     {
         return $this->belongsTo(Curricula::class, 'curricula_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($acad_year) {
+            $acad_year->update(['deleted_by' => Auth::id()]);
+        });
     }
 
     public static function booted()

@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class Curricula extends Model
 {
     use UserTracking;
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'acad_year_id',
@@ -19,9 +22,10 @@ class Curricula extends Model
         'program_major_id',
         'created_by',
         'updated_by',
+        'deleted_by',
     ];
 
-
+    protected $dates = ['deleted_at'];
 
     public function courses()
     {
@@ -53,5 +57,19 @@ class Curricula extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deleter()
+    {
+        return $this->belongsTo(User::class, 'deleted_by'); // Track who deleted the record
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($curriculas) {
+            $curriculas->update(['deleted_by' => Auth::id()]);
+        });
     }
 }
