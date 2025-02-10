@@ -20,7 +20,7 @@ class StudentsRegistrationInfosResource extends Resource
     protected static bool $shouldRegisterNavigation = false;
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
-    protected static ?string $navigationIcon = 'heroicon-s-pencil-square';
+    protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
 
     public static function form(Form $form): Form
     {

@@ -26,7 +26,7 @@ class ProgramsResource extends Resource
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
     protected static ?string $navigationLabel = 'Programs and Majors';
-    protected static ?string $navigationIcon = 'heroicon-s-list-bullet';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
 
     public static function form(Form $form): Form
     {

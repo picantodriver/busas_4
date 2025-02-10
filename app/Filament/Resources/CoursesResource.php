@@ -30,7 +30,7 @@ class CoursesResource extends Resource
 
     protected static ?string$navigationLabel = 'Courses';
 
-    protected static ?string $navigationIcon = 'heroicon-s-paint-brush';
+    protected static ?string $navigationIcon = 'heroicon-o-paint-brush';
 
     public $curricula_id;
     public $courses = [];

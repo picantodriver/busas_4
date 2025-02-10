@@ -28,7 +28,7 @@ class CollegesResource extends Resource
 
     protected static ?string$navigationLabel = 'Colleges';
 
-    protected static ?string $navigationIcon = 'heroicon-s-building-office-2';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
     public static function form(Form $form): Form
     {

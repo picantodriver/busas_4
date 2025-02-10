@@ -35,7 +35,7 @@ class CurriculaResource extends Resource
 
     protected static ?string $navigationLabel= 'Curricula';
 
-    protected static ?string $navigationIcon = 'heroicon-s-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {

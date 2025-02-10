@@ -21,7 +21,7 @@ class ProgramsCurriculaResource extends Resource
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
     protected static ?string $navigationLabel = 'Program Curriculum (REMOVE)';
-    protected static ?string $navigationIcon = 'heroicon-s-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     public static function form(Form $form): Form
     {

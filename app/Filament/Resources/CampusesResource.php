@@ -27,7 +27,7 @@ class CampusesResource extends Resource
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
     protected static ?string $navigationLabel = 'Campus and Colleges';
-    protected static ?string $navigationIcon = 'heroicon-s-building-library';
+    protected static ?string $navigationIcon = 'heroicon-o-building-library';
 
     public static function form(Form $form): Form
     {

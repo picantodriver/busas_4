@@ -8,6 +8,7 @@ use App\Models\Students;
 use App\Models\AcadTerms;
 use App\Models\AcadYears;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -46,7 +47,7 @@ class StudentsResource extends Resource
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
 
-    protected static ?string $navigationIcon = 'heroicon-s-user';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
     public static function form(Form $form): Form
     {
@@ -56,15 +57,21 @@ class StudentsResource extends Resource
                 Section::make('General Student Information')
                     ->description("Enter the student's general information.")
                     ->schema([
-                        TextInput::make('last_name')->label("Last Name"),
-                        TextInput::make('first_name')->label("First Name"),
-                        TextInput::make('middle_name')->label("Middle Name"),
-                        TextInput::make('suffix')->label("Suffix"),
-                        Select::make('sex')->label('Sex')->options([
-                            'M' => 'Male',
-                            'F' => 'Female',
-                        ])->required(),
+                        Grid::make(4)->schema([
+                            TextInput::make('last_name')->label("Last Name"),
+                            TextInput::make('first_name')->label("First Name"),
+                            TextInput::make('middle_name')->label("Middle Name"),
+                            TextInput::make('suffix')->label("Suffix"),
+                        ]),
+                        Grid::make(2)->schema([
+                            Select::make('sex')->label('Sex')->options([
+                                'M' => 'Male',
+                                'F' => 'Female',
+                            ])->required(),
+                            DatePicker::make('birthdate')->label("Date of Birth")->required(),
+                        ]),
                         TextInput::make('address')->label("Address")->required(),
+<<<<<<< HEAD
                         Select::make('province')
                             ->label("Province")
                             ->options([
@@ -122,167 +129,85 @@ class StudentsResource extends Resource
 
 
                         DatePicker::make('birthdate')->label("Date of Birth")->required(),
+=======
+>>>>>>> 9da2658181ca332813db3f865396ba25d70cc8c3
                         TextInput::make('birthplace')->label('Place of Birth')->required(),
+                        Grid::make(2)->schema([
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
                         TextInput::make('nstp_number')->label('NSTP Number')->required(),
                         ]),
+                    ]),
 
-// Student's graduation information section - table: students_graduation_infos
-Section::make('Student Graduation Information')
-    ->relationship('graduationInfos')
-    ->description("Enter the student's graduation information.")
-    ->schema([
-        DatePicker::make('graduation_date')
-            ->label('Date of Graduation')
-            ->required()
-            ->reactive(),
-        TextInput::make('board_approval')
-            ->label('Special Order Number (Board Resolution)')
-            ->required(),
-        Select::make('latin_honor')
-            ->label('Latin Honor')
-            ->options([
-                'Cum Laude' => 'Cum Laude',
-                'Magna Cum Laude' => 'Magna Cum Laude',
-                'Summa Cum Laude' => 'Summa Cum Laude',
-                'Academic Distinction' => 'Academic Distinction',
-                'With Honor' => 'With Honor',
-                'With High Honor' => 'With High Honor',
-                'With Highest Honor' => 'With Highest Honor',
-            ]),
-        Select::make('degree_attained')
-            ->label('Degree Attained')
-            ->options([
-                "Bachelor's Degree" => "Bachelor's Degree",
-                "Master's Degree" => "Master's Degree",
-                'Doctorate Degree' => 'Doctorate Degree',
-            ]),
-
-            //Gumagana Minsan? Di ko knows why :(
-            TextInput::make('dates_of_attendance')
-            ->label('Dates of Attendance (Month Year - Month Year)')
-            ->required()
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                $dates = explode(' - ', $state);
-                
-                if (count($dates) == 2) {
-                    try {
-                        $startDate = \Carbon\Carbon::createFromFormat('F Y', trim($dates[0]))->startOfMonth();
-                        $endDate = \Carbon\Carbon::createFromFormat('F Y', trim($dates[1]))->endOfMonth();
-                        $graduationDate = $get('graduation_date');
-        
-                        if ($graduationDate) {
-                            // Ensure the graduation date uses the same format
-                            $graduationDate = \Carbon\Carbon::createFromFormat('Y-m-d', $graduationDate)->startOfMonth();
-                            
-                            // Clone the endDate before adding a year
-                            $validEndDate = (clone $endDate)->addYear();
-        
-                            // Validate graduation date range
-                            if ($graduationDate->lt($startDate) || $graduationDate->gt($validEndDate)) {
-                                Notification::make()
-                                    ->title('Validation Error')
-                                    ->body('The graduation date must be within the dates of attendance or up to 1 year past the end date.')
-                                    ->danger()
-                                    ->send();
-                            }
-                        }
-                    } catch (\Exception $e) {
-                        Notification::make()
-                            ->title('Invalid Date Format')
-                            ->body('Please enter the correct date format: "Month Year - Month Year" (e.g., June 2019 - May 2023).')
-                            ->danger()
-                            ->send();
-                    }
-                }
-            })
-    ]),
+                // Student's graduation information section - table: students_graduation_infos
+                Section::make('Student Graduation Information')
+                    ->relationship('graduationInfos')
+                    ->description("Enter the student's graduation information.")
+                    ->schema([
+                        Grid::make(2)->schema([
+                            DatePicker::make('graduation_date')->label('Date of Graduation')->required(),
+                            TextInput::make('board_approval')->label('Special Order Number (Board Resolution)')->required(),
+                        ]),
+                        Grid::make(2)->schema([
+                            Select::make('latin_honor')->label('Latin Honor')->options([
+                                'Cum Laude' => 'Cum Laude',
+                                'Magna Cum Laude' => 'Magna Cum Laude',
+                                'Summa Cum Laude' => 'Summa Cum Laude',
+                                'Academic Distinction' => 'Academic Distinction',
+                                'With Honor' => 'With Honor',
+                                'With High Honor' => 'With High Honor',
+                                'With Highest Honor' => 'With Highest Honor',
+                            ]),
+                            Select::make('degree_attained')->label('Degree Attained')->options([
+                                "Bachelor's Degree" => "Bachelor's Degree",
+                                "Master's Degree" => "Master's Degree",
+                                'Doctorate Degree' => 'Doctorate Degree',
+                            ]),
+                        ]),
+                        TextInput::make('dates_of_attendance')->label('Dates of Attendance (Month Year - Month Year)')->required(),
+                    ]),
 
                 // Student's registration information section - table: students_registration_infos
                 Section::make('Student Registration Information')
-                ->relationship('registrationInfos')
-                ->description("Enter the student's registration information.")
-                ->schema([
-                    TextInput::make('last_school_attended')
-                        ->required()
-                        ->label('Last School Attended (High School/College)'),
-            
-                    TextInput::make('last_year_attended')
-                        ->label('Last Year Attended (Date graduated/last attended)')
-                        ->required()
-                        ->maxLength(4)
-                        ->numeric(),
-            
-                    Select::make('category')
-                        ->label('Category')
-                        ->options([
-                            'Transferee' => 'Transferee',
-                            'High School Graduate' => 'High School Graduate',
-                            'Senior High School Graduate' => 'Senior High School Graduate',
-                            'College Graduate' => 'College Graduate',
-                            'Others' => 'Others',
-                        ])
-                        ->required()
-                        ->reactive(),
-            
-                    TextInput::make('other_category')
-                        ->label('Specify Other Category')
-                        ->required(fn ($get) => $get('category') === 'Others')
-                        ->visible(fn ($get) => $get('category') === 'Others'),
-            
-                    Select::make('acad_year_id')
-                        ->label('Select Academic Year')
-                        ->required()
-                        ->options(AcadYears::all()->pluck('year', 'id'))
-                        ->searchable()
-                        ->reactive()
-                        ->getSearchResultsUsing(
-                            fn(string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id')
-                        )
-                        ->getOptionLabelUsing(fn($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
-            
-                    Select::make('acad_term_id')
-                        ->label('Select Academic Term (Date/Semester admitted)')
-                        ->required()
-                        ->reactive()
-                        ->options(
-                            function ($get) {
-                                $acadYearId = $get('acad_year_id');
-                                if ($acadYearId) {
-                                    return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                    ->relationship('registrationInfos')
+                    ->description("Enter the student's registration information.")
+                    ->schema([
+                        TextInput::make('last_school_attended')->required()->label('Last School Attended (High School/College)'),
+                        Grid::make(2)->schema([
+                            TextInput::make('last_year_attended')->label('Last Year Attended (Date graduated/last attended)')->required(),
+                            TextInput::make('category')->label('Category')->required(),
+                            Select::make('acad_year_id')->label('Select Academic Year')->required()->options(
+                                AcadYears::all()->pluck('year', 'id')
+                            )->searchable()->reactive()->getSearchResultsUsing(
+                                fn(string $query) => AcadYears::where('year', 'like', "%{$query}%")->get()->pluck('year', 'id')
+                            )->getOptionLabelUsing(fn($value) => AcadYears::find($value)?->year ?? 'Unknown Year'),
+                            Select::make('acad_term_id')->label('Select Academic Term (Date/Semester admitted)')->required()->reactive()->options(
+                                function ($get) {
+                                    $acadYearId = $get('acad_year_id');
+                                    if ($acadYearId) {
+                                        return AcadTerms::where('acad_year_id', $acadYearId)->pluck('acad_term', 'id');
+                                    }
+                                    return [];
                                 }
-                                return [];
-                            }
-                        )
-                        ->searchable()
-                        ->getSearchResultsUsing(
-                            fn(string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id')
-                        )
-                        ->getOptionLabelUsing(fn($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term')
-                        ]), 
-            
+                            )->searchable()->getSearchResultsUsing(
+                                fn(string $query) => AcadTerms::where('acad_term', 'like', "%{$query}%")->get()->pluck('acad_term', 'id')
+                            )->getOptionLabelUsing(fn($value) => AcadTerms::find($value)?->acad_term ?? 'Unknown Academic Term'),
+                        ]),
+                    ]),
 
-Toggle::make('is_regular')
-->label('Regular Student')
-->default(true)
-->reactive(),
-
-// Student's grades - table: students_records
-Section::make('Student Records (Regular)')
-->visible(fn($get) => $get('is_regular'))
-->schema([
-    Select::make('campus_id')
-        ->label('Select Campus')
-        ->required()
-        ->reactive()
-        ->options(Campuses::all()->pluck('campus_name', 'id'))
-        ->afterStateUpdated(function ($set) {
-            $set('college_id', null);
-            $set('program_id', null);
-            $set('program_major_id', null);
-        })
-        ->searchable(),
+                Toggle::make('is_regular')->label('Regular Student')->default(true)->reactive(),
+                
+                // Student's grades - table: students_records
+                Section::make('Student Records (Regular)')
+                    ->visible(fn($get) => $get('is_regular'))
+                    ->schema([
+                        Grid::make(2)->schema([
+                        Select::make('campus_id')->label('Select Campus')->required()->reactive()->options(
+                            Campuses::all()->pluck('campus_name', 'id')
+                        )->afterStateUpdated(function ($set) {
+                            $set('college_id', null);
+                            $set('program_id', null);
+                            $set('program_major_id', null);
+                        })->searchable(),
 
     Select::make('college_id')
         ->label('Select College')
@@ -329,6 +254,7 @@ Section::make('Student Records (Regular)')
         )
         ->searchable()
         ->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
+    ]),
 
     Repeater::make('records_regular')
         ->label('Grades')
@@ -371,6 +297,7 @@ Section::make('Student Records (Regular)')
                 ->label('Courses & Grades')
                 ->reactive()
                 ->schema([
+                    Grid::make(2)->schema([
                     Select::make('course_id')
                         ->label('Course Code')
                         ->options(
@@ -393,7 +320,8 @@ Section::make('Student Records (Regular)')
                     TextInput::make('descriptive_title')
                         ->label('Descriptive Title')
                         ->disabled(),
-
+                    ]),
+                    Grid::make(3)->schema([
                     TextInput::make('final_grade')
                         ->label('Final Grade')
                         ->required(),
@@ -404,6 +332,7 @@ Section::make('Student Records (Regular)')
                     TextInput::make('course_unit')
                         ->label('Units of Credit')
                         ->disabled(),
+                    ]),
                 ]),
         ])
 ]),
