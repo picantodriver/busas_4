@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Students extends Model
 {
     use HasFactory;
     use UserTracking;
+    use SoftDeletes;
 
     protected $fillable = [
         'created_by',
@@ -24,42 +27,11 @@ class Students extends Model
         'birthplace',
         'gwa',
         'nstp_number',
-        'curriculum_id',
         'is_regular',
-        'region',
-        'province',
-        'city_municipality',
+        'deleted_by',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($student) {
-            // Get the authenticated user's ID
-            $userId = auth()->id();
-
-            // If records were submitted with the form
-            if (request()->has('records_regular')) {
-                foreach (request()->input('records_regular') as $record) {
-                    $student->records()->create([
-                        'acad_term_id' => $record['acad_term_id'],
-                        'course_id' => $record['course_id'],
-                        'final_grade' => $record['final_grade'],
-                        'removal_rating' => $record['removal_rating'] ?? null,
-                        'created_by' => $userId,
-                    ]);
-                }
-            }
-            static::creating(function ($student) {
-                $student->created_by = auth()->id();
-            });
-
-            static::updating(function ($student) {
-                $student->updated_by = auth()->id();
-            });
-        });
-    }
+    protected $dates = ['deleted_at'];
 
     public function creator()
     {
@@ -83,5 +55,19 @@ class Students extends Model
     public function registrationInfos()
     {
         return $this->hasOne(StudentsRegistrationInfos::class, 'student_id');
+    }
+
+    public function deleter()
+    {
+        return $this->belongsTo(User::class, 'deleted_by'); // Track who deleted the record
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($students) {
+            $students->update(['deleted_by' => Auth::id()]);
+        });
     }
 };
