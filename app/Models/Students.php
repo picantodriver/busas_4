@@ -24,8 +24,42 @@ class Students extends Model
         'birthplace',
         'gwa',
         'nstp_number',
+        'curriculum_id',
         'is_regular',
+        'region',
+        'province',
+        'city_municipality',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($student) {
+            // Get the authenticated user's ID
+            $userId = auth()->id();
+
+            // If records were submitted with the form
+            if (request()->has('records_regular')) {
+                foreach (request()->input('records_regular') as $record) {
+                    $student->records()->create([
+                        'acad_term_id' => $record['acad_term_id'],
+                        'course_id' => $record['course_id'],
+                        'final_grade' => $record['final_grade'],
+                        'removal_rating' => $record['removal_rating'] ?? null,
+                        'created_by' => $userId,
+                    ]);
+                }
+            }
+            static::creating(function ($student) {
+                $student->created_by = auth()->id();
+            });
+
+            static::updating(function ($student) {
+                $student->updated_by = auth()->id();
+            });
+        });
+    }
 
     public function creator()
     {

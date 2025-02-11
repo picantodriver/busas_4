@@ -26,6 +26,12 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->collapsibleNavigationGroups(false)
+<<<<<<< Updated upstream
+=======
+            ->brandLogo(asset('images/busas.png'))
+            ->brandLogoHeight('60px')
+            // ->brandName(config('app.name')) 
+>>>>>>> Stashed changes
             ->default()
             ->id('admin')
             ->path('admin')

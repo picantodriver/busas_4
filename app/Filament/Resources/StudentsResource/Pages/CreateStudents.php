@@ -28,7 +28,7 @@ class CreateStudents extends CreateRecord
                     'descriptive_title' => $course['descriptive_title'],
                     'units_of_credit' => $course['units_of_credit'],
                 ]);
-                dd($data);
+                
             }
         }
 

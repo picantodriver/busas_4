@@ -23,6 +23,19 @@ class StudentsRecords extends Model
         'course_id',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($record) {
+            $record->created_by = auth()->id();
+        });
+
+        static::updating(function ($record) {
+            $record->updated_by = auth()->id();
+        });
+    }
+
     public function student()
     {
         return $this->belongsTo(Students::class, 'student_id');
@@ -39,4 +52,9 @@ class StudentsRecords extends Model
     {
         return $this->belongsTo(Courses::class, 'course_id');
     }
+    public function academicTerm()
+    {
+        return $this->belongsTo(AcadTerms::class, 'acad_term_id');
+    }
 }
+

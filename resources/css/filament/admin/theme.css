@@ -1,3 +1,130 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 @import '/vendor/awcodes/filament-table-repeater/resources/css/plugin.css';
 @config 'tailwind.config.js';
+<<<<<<< Updated upstream
+=======
+
+.fi-sidebar {
+    @apply bg-white;
+}
+
+.fi-sidebar-item>a>svg,
+.fi-sidebar-item>a>span {
+    @apply text-[#545a63] font-medium;
+}
+
+.fi-sidebar-item-active>a {
+    @apply bg-blue-200 bg-opacity-50;
+
+    &>svg,
+    span {
+        @apply text-[#0099CB];
+    }
+
+    &:hover {
+        @apply bg-blue-200 bg-opacity-50;
+
+        &>svg,
+        span {
+            @apply text-orange-500;
+        }
+    }
+}
+
+.fi-sidebar-item>a:hover {
+
+    &>svg,
+    span {
+        @apply text-orange-500;
+    }
+}
+
+.fi-btn:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-btn:hover svg {
+    @apply text-[#0099CB];
+}
+
+#key-bindings-1:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+#key-bindings-1:hover svg {
+    @apply text-red-600;
+}
+
+#key-bindings-2:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-ac-action:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-ac-action:hover svg {
+    @apply text-[#0099CB];
+}
+
+.dark .fi-btn:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-btn:hover svg {
+    @apply text-[#66B2FF];
+}
+
+.dark #key-bindings-1:hover {
+    @apply bg-gray-800 text-red-400;
+}
+
+.dark #key-bindings-1:hover svg {
+    @apply text-red-400;
+}
+
+.dark #key-bindings-2:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-ac-action:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-ac-action:hover svg {
+    @apply text-[#66B2FF];
+}
+
+
+/* .fi-topbar, .fi-sidebar-header {
+    display: none;
+} */
+
+.apexcharts-bar-area:hover {
+    fill: #FC7019 !important;
+    stroke: #FC7019 !important;
+}
+
+.filament-apex-charts-heading {
+    color: #566a7f;
+}
+
+.apexcharts-title-text {
+    fill: #6D7E90 !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    color: #555555;
+}
+
+.fi-wi-stats-overview-stat-icon {
+    color: #0099CB !important;
+}
+
+.dark .footer {
+    width: 100%;
+    text-align: center;
+    height: 30px;
+    position: relative;
+}
+>>>>>>> Stashed changes
