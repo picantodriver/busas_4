@@ -42,6 +42,9 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        //     ->query(
+        //     User::query()->withoutGlobalScope(SoftDeletingScope::class)
+        // )                //!!! On Hold
             ->columns([
                 TextColumn::make('name'),
                 TextColumn::make('email'),
@@ -49,10 +52,11 @@ class UserResource extends Resource
 
             ])
             ->filters([
-                //
+                //!!!On Hold    //Tables\Filters\TrashedFilter::make(), // Allow filtering deleted records
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -9,6 +9,7 @@ use App\Models\AcadTerms;
 use App\Models\AcadYears;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -270,7 +271,16 @@ class StudentsResource extends Resource
     }
     public static function table(Table $table): Table
     {
+        $user = Filament::auth()->user(); // Get the authenticated user
+
         return $table
+            ->query(
+        Students::query()
+                    ->when(
+                        !$user->roles->contains('name', 'super_admin'), // If NOT super admin
+                        fn ($query) => $query->whereNull('deleted_at') // Exclude soft deleted records
+                    )
+            )
             ->columns([
                 TextColumn::make('last_name')
                     ->label('Last Name')
@@ -306,11 +316,14 @@ class StudentsResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                // Show the "Trashed" filter ONLY if the user is a super admin
+            ...($user->roles->contains('name', 'super_admin') ? [Tables\Filters\TrashedFilter::make()] : [])
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                 // Show "Restore" button only for super_admin
+            ...($user->roles->contains('name', 'super_admin') ? [Tables\Actions\RestoreAction::make()] : [])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
