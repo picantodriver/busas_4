@@ -32,7 +32,7 @@ class Students extends Model
     ];
 
     protected $dates = ['deleted_at'];
-
+    
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -37,13 +37,11 @@ use App\Models\Campuses;
 use App\Models\Colleges;
 use App\Models\ProgramsMajor;
 use Filament\Infolists\Components\Tabs;
-<<<<<<< Updated upstream
-=======
 use Illuminate\Validation\Rule;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Hidden;
->>>>>>> Stashed changes
+use Filament\Forms\Components\Grid;
 
 class StudentsResource extends Resource
 {
@@ -62,19 +60,6 @@ class StudentsResource extends Resource
                 Section::make('General Student Information')
                     ->description("Enter the student's general information.")
                     ->schema([
-<<<<<<< Updated upstream
-                        TextInput::make('last_name')->label("Last Name"),
-                        TextInput::make('first_name')->label("First Name"),
-                        TextInput::make('middle_name')->label("Middle Name"),
-                        TextInput::make('suffix')->label("Suffix"),
-                        Select::make('sex')->label('Sex')->options([
-                            'M' => 'Male',
-                            'F' => 'Female',
-                        ])->required(),
-                        TextInput::make('address')->label("Address")->required(),
-                        DatePicker::make('birthdate')->label("Date of Birth")->required(),
-                        TextInput::make('birthplace')->label('Place of Birth')->required(),
-=======
                         Grid::make(4)->schema([
                             TextInput::make('last_name')->label("Last Name"),
                             TextInput::make('first_name')->label("First Name"),
@@ -153,7 +138,6 @@ class StudentsResource extends Resource
                     ->required(),
         ]),
                         Grid::make(2)->schema([
->>>>>>> Stashed changes
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
                         TextInput::make('nstp_number')->label('NSTP Number')->required(),
                     ]),
@@ -221,140 +205,6 @@ class StudentsResource extends Resource
                             $set('program_major_id', null);
                         })->searchable(),
 
-<<<<<<< Updated upstream
-                        Select::make('college_id')->label('Select College')->required()->reactive()->options(
-                            function ($get) {
-                                $campus_id = $get('campus_id');
-                                if ($campus_id) {
-                                    return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable(),
-
-                        Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                            function ($get) {
-                                $college_id = $get('college_id');
-                                if ($college_id) {
-                                    return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-
-                        Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
-                            function ($get) {
-                                $program_id = $get('program_id');
-                                if ($program_id) {
-                                    return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-
-
-
-                        Repeater::make('records_regular')->label('Grades')->reactive()
-                            ->schema([
-                                Select::make('curricula_id')->label('Select Curriculum')->required()->reactive()->options(
-                                    function ($get) {
-                                        $program_id = $get('../../program_id');
-                                        $program_major_id = $get('../../program_major_id');
-                                        if ($program_id && $program_major_id) {
-                                            return Curricula::where('program_id', $program_id)
-                                                ->where('program_major_id', $program_major_id)
-                                                ->pluck('curricula_name', 'id');
-                                        } elseif ($program_id) {
-                                            return Curricula::where('program_id', $program_id)->pluck('curricula_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        if ($state) {
-                                            $courses = Courses::where('curricula_id', $state)->get();
-                                            $set('records_regular_grades', $courses->map(function ($course) {
-                                                return [
-                                                    'course_code' => $course->course_code,
-                                                    'descriptive_title' => $course->descriptive_title,
-                                                    'course_unit' => $course->course_unit,
-                                                ];
-                                            })->toArray());
-                                        }
-                                    }),
-
-                                Repeater::make('records_regular_grades')
-                                    ->label('Courses & Grades')
-                                    ->reactive()
-                                    ->schema([
-                                        Select::make('course_code')->label('Course Code')->options(
-                                            function ($get) {
-                                                $curricula_id = $get('curricula_id');
-                                                if ($curricula_id) {
-                                                    return Courses::where('curricula_id', $curricula_id)->pluck('course_code', 'id');
-                                                }
-                                                return [];
-                                            }
-                                        )->reactive()->searchable()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                $course = Courses::find($state);
-                                                $set('descriptive_title', $course ? $course->descriptive_title : 'Unknown Descriptive Title');
-                                                $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
-                                            }),
-                                        TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
-                                        TextInput::make('final_grade')->label('Final Grade')->required(),
-                                        TextInput::make('removal_rating')->label('Removal Rating'),
-                                        TextInput::make('course_unit')->label('Units of Credit')->disabled(),
-                                    ]),
-                            ])
-
-                    ]),
-                Section::make('Student Records (Irregular)')
-                    ->visible(fn($get) => !$get('is_regular'))
-                    ->schema([
-                        Repeater::make('records_irregular')
-                            ->reactive()
-                            ->schema([
-                                Select::make('campus_id')
-                                    ->label('Select Campus')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        Campuses::all()->pluck('campus_name', 'id')
-                                    ),
-                                Select::make('college_id')
-                                    ->label('Select College')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        function ($get) {
-                                            $campus_id = $get('campus_id');
-                                            if ($campus_id) {
-                                                return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
-                                            }
-                                            return [];
-                                        }
-                                    )->searchable(),
-                                Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                                    function ($get) {
-                                        $college_id = $get('college_id');
-                                        if ($college_id) {
-                                            return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                                Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
-                                    function ($get) {
-                                        $program_id = $get('program_id');
-                                        if ($program_id) {
-                                            return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-                            ])
-=======
     Select::make('college_id')
         ->label('Select College')
         ->required()
@@ -488,11 +338,7 @@ class StudentsResource extends Resource
                 ]),
         ]);
 }
->>>>>>> Stashed changes
 
-                    ])
-            ]);
-    }
     public static function table(Table $table): Table
     {
         $user = Filament::auth()->user(); // Get the authenticated user
@@ -521,26 +367,7 @@ class StudentsResource extends Resource
                 TextColumn::make('suffix')
                     ->label('Suffix')
                     ->searchable()
-<<<<<<< Updated upstream
                     ->sortable(),
-                TextColumn::make('sex')
-                    ->label('Sex')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('address')
-                    ->label('Address')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthdate')
-                    ->label('Date of Birth')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthplace')
-                    ->label('Place of Birth')
-                    ->searchable()
-                    ->sortable(),
-=======
-                    ->sortable(),*/
                 TextColumn::make('name')
                     ->label('Name')
                     ->getStateUsing(
@@ -616,7 +443,6 @@ class StudentsResource extends Resource
                         $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
                             ->where('students_graduation_infos.graduation_date', 'like', "%{$search}%");
                     }),
->>>>>>> Stashed changes
             ])
             ->defaultSort('name')
             ->modifyQueryUsing(function (Builder $query) {

@@ -1,8 +1,6 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 @import '/vendor/awcodes/filament-table-repeater/resources/css/plugin.css';
 @config 'tailwind.config.js';
-<<<<<<< Updated upstream
-=======
 
 .fi-sidebar {
     @apply bg-white;
@@ -127,4 +125,3 @@
     height: 30px;
     position: relative;
 }
->>>>>>> Stashed changes
