@@ -275,56 +275,65 @@ class StudentsResource extends Resource
 
         return $table
             ->query(
-        Students::query()
+                Students::query()
                     ->when(
                         !$user->roles->contains('name', 'super_admin'), // If NOT super admin
-                        fn ($query) => $query->whereNull('deleted_at') // Exclude soft deleted records
+                        fn($query) => $query->whereNull('deleted_at') // Exclude soft deleted records
                     )
             )
             ->columns([
                 TextColumn::make('last_name')
-                    ->label('Last Name')
-                    ->searchable()
+                ->label('Last Name')
+                ->searchable()
                     ->sortable(),
                 TextColumn::make('first_name')
-                    ->label('First Name')
-                    ->searchable()
+                ->label('First Name')
+                ->searchable()
                     ->sortable(),
                 TextColumn::make('middle_name')
-                    ->label('Middle Name')
-                    ->searchable()
+                ->label('Middle Name')
+                ->searchable()
                     ->sortable(),
                 TextColumn::make('suffix')
-                    ->label('Suffix')
-                    ->searchable()
+                ->label('Suffix')
+                ->searchable()
                     ->sortable(),
                 TextColumn::make('sex')
-                    ->label('Sex')
-                    ->searchable()
+                ->label('Sex')
+                ->searchable()
                     ->sortable(),
-                TextColumn::make('address')
-                    ->label('Address')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthdate')
-                    ->label('Date of Birth')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthplace')
-                    ->label('Place of Birth')
-                    ->searchable()
-                    ->sortable(),
+            TextColumn::make('address')
+            ->label('Address')
+            ->searchable()
+                ->sortable(),
+            TextColumn::make('birthdate')
+                ->label('Date of Birth')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('birthplace')
+                ->label('Place of Birth')
+                ->searchable()
+                ->sortable(),
             ])
-            ->filters([
-                // Show the "Trashed" filter ONLY if the user is a super admin
-            ...($user->roles->contains('name', 'super_admin') ? [Tables\Filters\TrashedFilter::make()] : [])
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                 // Show "Restore" button only for super_admin
-            ...($user->roles->contains('name', 'super_admin') ? [Tables\Actions\RestoreAction::make()] : [])
-            ])
+            ->filters(
+                $user->roles->contains('name', 'super_admin')
+                ? [Tables\Filters\TrashedFilter::make()] // Show only for super_admin
+                    : []
+            )
+            ->actions(
+                array_merge(
+                    [
+                        Tables\Actions\EditAction::make(),
+                        Tables\Actions\DeleteAction::make(),
+                    ],
+                    $user->roles->contains('name', 'super_admin')
+                    ? [
+                        Tables\Actions\RestoreAction::make(),
+                        Tables\Actions\ForceDeleteAction::make(),
+                    ]
+                        : []
+                )
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

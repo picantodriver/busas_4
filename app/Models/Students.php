@@ -69,5 +69,13 @@ class Students extends Model
         static::deleting(function ($students) {
             $students->update(['deleted_by' => Auth::id()]);
         });
+
+        // Cascade delete when force deleting
+        static::forceDeleting(function ($students) {
+            // Permanently delete related records
+            $students->graduationInfos()->forceDelete();
+            $students->records()->forceDelete();
+            $students->registrationInfos()->forceDelete();
+        });
     }
 };
