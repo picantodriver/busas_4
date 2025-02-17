@@ -29,6 +29,7 @@ class Students extends Model
         'nstp_number',
         'is_regular',
         'deleted_by',
+        'status',
     ];
 
     protected $dates = ['deleted_at'];
@@ -68,6 +69,18 @@ class Students extends Model
 
         static::deleting(function ($students) {
             $students->update(['deleted_by' => Auth::id()]);
+        });
+
+        static::creating(function ($student) {
+            if (empty($student->status)) {
+                $student->status = 'unverified';
+            }
+        });
+
+        static::updating(function ($student) {
+            if ($student->isDirty() && $student->status === 'unverified') {
+                $student->status = 'verified';
+            }
         });
     }
 };

@@ -16,4 +16,13 @@ class EditStudents extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    public function mutateFormDataBeforeSave(array $data): array
+    {
+        if (!isset($data['status']) || empty($data['status'])) {
+            $data['status'] = 'unverified';
+        }
+
+        return $data;
+    }
 }
