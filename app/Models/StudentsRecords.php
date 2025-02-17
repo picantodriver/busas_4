@@ -39,4 +39,15 @@ class StudentsRecords extends Model
     {
         return $this->belongsTo(Courses::class, 'course_id');
     }
+<<<<<<< Updated upstream
+=======
+    public function academicTerm()
+    {
+        return $this->belongsTo(AcadTerms::class, 'acad_term_id');
+    }
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curriculum_id');
+    }
+>>>>>>> Stashed changes
 }

@@ -13,7 +13,9 @@ class ListStudents extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('New Student')
+            ->icon('heroicon-o-plus'),
         ];
     }
 }

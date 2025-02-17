@@ -10,6 +10,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use Filament\View\PanelsRenderHook;
 use Filament\Navigation\NavigationGroup;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -26,12 +27,27 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->collapsibleNavigationGroups(false)
+<<<<<<< Updated upstream
+=======
+            ->sidebarCollapsibleOnDesktop()
+            ->brandLogo(asset('images/busas.png'))
+            ->brandLogoHeight('55px')
+            // ->brandName(config('app.name')) 
+            ->maxContentWidth('full')
+            //->topbar(false)
+            // ->renderHook(
+            //     PanelsRenderHook::TOPBAR,
+            //     fn () => view('filament.widgets.date-time-widget')
+            // )
+>>>>>>> Stashed changes
             ->default()
             ->id('admin')
             ->path('admin')
+            ->passwordReset()
+            ->emailVerification()
             ->login()
             ->colors([
-                'primary' => Color::Zinc,
+                'primary' => ('#019bdb'),
             ])
             ->navigationGroups([
                 'Academic Structure',
@@ -39,6 +55,11 @@ class AdminPanelProvider extends PanelProvider
                 'Institutional Structure',
                 'Student Information'
             ])
+            ->renderHook(
+                // PanelsRenderHook::FOOTER,
+                PanelsRenderHook::BODY_END,
+                fn() => view('footer')
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
