@@ -7,18 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+<<<<<<< Updated upstream
 use Filament\Actions\Action;
+=======
+>>>>>>> Stashed changes
 
 class CreateStudents extends CreateRecord
 {
     protected static string $resource = StudentsResource::class;
 
+<<<<<<< Updated upstream
     protected static bool $canCreateAnother = false;
 
     protected function validateGradeData(array $grade): void 
     {
         $requiredFields = ['course_code', 'final_grade'];
         
+=======
+    protected function validateGradeData(array $grade): void
+    {
+        $requiredFields = ['course_code', 'final_grade'];
+
+>>>>>>> Stashed changes
         foreach ($requiredFields as $field) {
             if (!isset($grade[$field]) || empty($grade[$field])) {
                 throw new InvalidArgumentException("Missing required grade field: {$field}");
@@ -34,6 +44,11 @@ class CreateStudents extends CreateRecord
         
         Log::info('Created student:', ['id' => $student->id]);
 
+<<<<<<< Updated upstream
+=======
+        Log::info('Created student:', ['id' => $student->id]);
+
+>>>>>>> Stashed changes
         // Handle regular student records
         if (isset($data['records_regular']) && $data['is_regular']) {
             Log::info('Regular records data:', $data['records_regular']);
@@ -53,14 +68,23 @@ class CreateStudents extends CreateRecord
                         if (!$acadTerm) {
                             throw new InvalidArgumentException('No academic term found in the database.');
                         }
+<<<<<<< Updated upstream
                         
+=======
+
+>>>>>>> Stashed changes
                         $acadTermId = $acadTerm->id;
 
                         if (!$course) {
                             throw new InvalidArgumentException('Invalid course_code: ' . $grade['course_code']);
                         }
+<<<<<<< Updated upstream
         
                         
+=======
+
+
+>>>>>>> Stashed changes
                         $student->records()->create([
                             'curricula_id' => $record['curricula_id'],
                             'course_id' => $course->id,
@@ -69,7 +93,11 @@ class CreateStudents extends CreateRecord
                             'final_grade' => $grade['final_grade'],
                             'removal_rating' => $grade['removal_rating'] ?? null, // This can be null
                             'course_unit' => $course->course_unit,
+<<<<<<< Updated upstream
                             'acad_term_id' => $acadTermId, 
+=======
+                            'acad_term_id' => $acadTermId,
+>>>>>>> Stashed changes
                         ]);
                     }
                 }
@@ -86,7 +114,11 @@ class CreateStudents extends CreateRecord
                 if (isset($record['records_irregular_grades'])) {
                     foreach ($record['records_irregular_grades'] as $grade) {
                         $this->validateGradeData($grade);
+<<<<<<< Updated upstream
                         
+=======
+
+>>>>>>> Stashed changes
                         $student->records()->create([
                             'curricula_id' => $record['curricula_id'],
                             'course_id' => $course->id,
@@ -95,7 +127,11 @@ class CreateStudents extends CreateRecord
                             'final_grade' => $grade['final_grade'],
                             'removal_rating' => $grade['removal_rating'] ?? null, // This can be null
                             'course_unit' => $grade['course_unit'],
+<<<<<<< Updated upstream
                             'acad_term_id' => $acadTermId, 
+=======
+                            'acad_term_id' => $acadTermId,
+>>>>>>> Stashed changes
                         ]);
                     }
                 }
@@ -105,10 +141,19 @@ class CreateStudents extends CreateRecord
         // Create graduation information if the data exists
         if (isset($data['graduationInfos'])) {
             Log::info('Graduation info data:', $data['graduationInfos']);
+<<<<<<< Updated upstream
             
             $graduationData = $data['graduationInfos'];
             if (!isset($graduationData['graduation_date']) || !isset($graduationData['board_approval']) || 
                 !isset($graduationData['dates_of_attendance'])) {
+=======
+
+            $graduationData = $data['graduationInfos'];
+            if (
+                !isset($graduationData['graduation_date']) || !isset($graduationData['board_approval']) ||
+                !isset($graduationData['dates_of_attendance'])
+            ) {
+>>>>>>> Stashed changes
                 throw new InvalidArgumentException('Missing required graduation information fields');
             }
 
@@ -124,10 +169,17 @@ class CreateStudents extends CreateRecord
         // Create registration information if the data exists
         if (isset($data['registrationInfos'])) {
             Log::info('Registration info data:', $data['registrationInfos']);
+<<<<<<< Updated upstream
             
             $registrationData = $data['registrationInfos'];
             $requiredFields = ['last_school_attended', 'last_year_attended', 'category', 'acad_year_id', 'acad_term_id'];
             
+=======
+
+            $registrationData = $data['registrationInfos'];
+            $requiredFields = ['last_school_attended', 'last_year_attended', 'category', 'acad_year_id', 'acad_term_id'];
+
+>>>>>>> Stashed changes
             foreach ($requiredFields as $field) {
                 if (!isset($registrationData[$field])) {
                     throw new InvalidArgumentException("Missing required registration field: {$field}");
@@ -150,6 +202,7 @@ class CreateStudents extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+<<<<<<< Updated upstream
 protected function getCreateFormAction(): \Filament\Actions\Action
 {
     return Action::make('create')
@@ -159,3 +212,6 @@ protected function getCreateFormAction(): \Filament\Actions\Action
         ->keyBindings(['mod+s']);
 }
 }
+=======
+}
+>>>>>>> Stashed changes

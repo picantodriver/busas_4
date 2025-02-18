@@ -19,6 +19,11 @@ class Curricula extends Model
         'program_major_id',
         'created_by',
         'updated_by',
+<<<<<<< Updated upstream
+=======
+        'deleted_by',
+        'curricula_id'
+>>>>>>> Stashed changes
     ];
 
 

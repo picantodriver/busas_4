@@ -17,7 +17,11 @@ class EditStudents extends EditRecord
     public function getRecord(): Model
     {
         $record = parent::getRecord();
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         $record->load([
             'graduationInfos',
             'registrationInfos',
@@ -32,10 +36,17 @@ class EditStudents extends EditRecord
         $student = $this->getRecord();
 
         $data['full_name'] = $student->first_name . ' ' . $student->last_name;
+<<<<<<< Updated upstream
         
         if ($student->records()->exists()) {
             $data['is_regular'] = $student->records->first()->is_regular ?? true;
             
+=======
+
+        if ($student->records()->exists()) {
+            $data['is_regular'] = $student->records->first()->is_regular ?? true;
+
+>>>>>>> Stashed changes
             if ($data['is_regular']) {
                 $data['records_regular'] = $this->formatRegularRecords($student);
             } else {
@@ -49,11 +60,19 @@ class EditStudents extends EditRecord
     protected function formatRegularRecords(Students $student): array
     {
         $formattedRecords = [];
+<<<<<<< Updated upstream
         
         foreach ($student->records as $record) {
             // Clean and format course unit
             $courseUnit = $this->formatCourseUnit($record->course_unit);
     
+=======
+
+        foreach ($student->records as $record) {
+            // Clean and format course unit
+            $courseUnit = $this->formatCourseUnit($record->course_unit);
+
+>>>>>>> Stashed changes
             $formattedRecords[] = [
                 'curricula_id' => $record->curricula->curricula_name ?? null,
                 'records_regular_grades' => [
@@ -67,6 +86,7 @@ class EditStudents extends EditRecord
                 ],
             ];
         }
+<<<<<<< Updated upstream
     
         return $formattedRecords;
     }
@@ -75,6 +95,16 @@ class EditStudents extends EditRecord
     {
         $formattedRecords = [];
         
+=======
+
+        return $formattedRecords;
+    }
+
+    protected function formatIrregularRecords(Students $student): array
+    {
+        $formattedRecords = [];
+
+>>>>>>> Stashed changes
         foreach ($student->records as $record) {
             // Clean and format course unit
             $courseUnit = $this->formatCourseUnit($record->course_unit);
@@ -105,7 +135,11 @@ class EditStudents extends EditRecord
                 if (isset($record['records_regular_grades'])) {
                     foreach ($record['records_regular_grades'] as &$grade) {
                         if (isset($grade['course_unit'])) {
+<<<<<<< Updated upstream
                             $grade['course_unit'] = (string) $grade['course_unit']; 
+=======
+                            $grade['course_unit'] = (string) $grade['course_unit'];
+>>>>>>> Stashed changes
                         }
                     }
                 }
@@ -115,15 +149,22 @@ class EditStudents extends EditRecord
         if (isset($data['records_irregular'])) {
             foreach ($data['records_irregular'] as &$record) {
                 if (isset($record['course_unit'])) {
+<<<<<<< Updated upstream
                     $record['course_unit'] = (string) $record['course_unit'];
+=======
+                    $record['course_unit'] = (string) $record['course_unit']; // ✅ Keep it as-is
+>>>>>>> Stashed changes
                 }
             }
         }
 
+<<<<<<< Updated upstream
         if (!isset($data['status']) || empty($data['status'])) {
             $data['status'] = 'unverified';
         }
 
+=======
+>>>>>>> Stashed changes
         return $data;
     }
 

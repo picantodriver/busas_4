@@ -10,6 +10,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use Filament\View\PanelsRenderHook;
 use Filament\Navigation\NavigationGroup;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -29,21 +30,34 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->collapsibleNavigationGroups(false)
             ->sidebarCollapsibleOnDesktop()
+<<<<<<< Updated upstream
             ->brandLogo(asset('storage/busas.png'))
             ->brandLogoHeight('55px')
             // ->brandName(config('app.name')) 
             ->maxContentWidth('full')
+=======
+            ->brandLogo(asset('images/busas.png'))
+            ->brandLogoHeight('55px')
+            ->maxContentWidth('full')
+            // ->brandName(config('app.name'))
+>>>>>>> Stashed changes
             //->topbar(false)
             // ->renderHook(
             //     PanelsRenderHook::TOPBAR,
             //     fn () => view('filament.widgets.date-time-widget')
+<<<<<<< Updated upstream
             // )
+=======
+            // ) 
+>>>>>>> Stashed changes
             ->default()
             ->id('admin')
             ->path('admin')
             ->passwordReset()
             ->emailVerification()
             ->login()
+            ->passwordReset()
+            ->emailverification()
             ->colors([
                 'primary' => ('#019bdb'),
             ])

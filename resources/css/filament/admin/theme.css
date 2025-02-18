@@ -247,4 +247,8 @@
 .dark .table-repeater-header-column {
     @apply text-[#ededed];
     @apply bg-gray-800;
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

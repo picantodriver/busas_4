@@ -29,11 +29,17 @@ class Students extends Model
         'nstp_number',
         'is_regular',
         'deleted_by',
+<<<<<<< Updated upstream
         'status',
+=======
+        'region',
+        'province',
+        'city_municipality',
+>>>>>>> Stashed changes
     ];
 
     protected $dates = ['deleted_at'];
-    
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -50,13 +56,14 @@ class Students extends Model
 
     public function records()
     {
-        return $this->hasMany(StudentsRecords::class, 'student_id');
+        return $this->hasMany(StudentsRecords::class, 'student_id', 'id');
     }
 
     public function registrationInfos()
     {
         return $this->hasOne(StudentsRegistrationInfos::class, 'student_id');
     }
+
 
     public function deleter()
     {
