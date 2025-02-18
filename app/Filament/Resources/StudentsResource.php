@@ -9,15 +9,13 @@ use App\Models\AcadTerms;
 use App\Models\AcadYears;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-<<<<<<< Updated upstream
-=======
 use Filament\Forms\Components\Grid;
->>>>>>> Stashed changes
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,12 +37,9 @@ use App\Models\Programs;
 use App\Models\Campuses;
 use App\Models\Colleges;
 use App\Models\ProgramsMajor;
-<<<<<<< Updated upstream
-=======
 use Filament\Forms\Components\Hidden;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
->>>>>>> Stashed changes
 use Filament\Infolists\Components\Tabs;
 
 class StudentsResource extends Resource
@@ -64,28 +59,17 @@ class StudentsResource extends Resource
                 Section::make('General Student Information')
                     ->description("Enter the student's general information.")
                     ->schema([
-<<<<<<< Updated upstream
-=======
                         Grid::make(2)->schema([
->>>>>>> Stashed changes
                         TextInput::make('last_name')->label("Last Name"),
                         TextInput::make('first_name')->label("First Name"),
                         TextInput::make('middle_name')->label("Middle Name"),
                         TextInput::make('suffix')->label("Suffix"),
-<<<<<<< Updated upstream
-=======
                         ]),
                         Grid::make(2)->schema([
->>>>>>> Stashed changes
                         Select::make('sex')->label('Sex')->options([
                             'M' => 'Male',
                             'F' => 'Female',
                         ])->required(),
-<<<<<<< Updated upstream
-                        TextInput::make('address')->label("Address")->required(),
-                        DatePicker::make('birthdate')->label("Date of Birth")->required(),
-                        TextInput::make('birthplace')->label('Place of Birth')->required(),
-=======
                         DatePicker::make('birthdate')->label("Date of Birth")->required(),
                         ]),
                         TextInput::make('address')->label("Address")->required(),
@@ -93,7 +77,6 @@ class StudentsResource extends Resource
                         TextInput::make('birthplace')->label('Place of Birth')->required(),
 
                         Grid::make(2)->schema([
->>>>>>> Stashed changes
                         TextInput::make('gwa')->label('General Weighted Average')->required(),
                         TextInput::make('nstp_number')->label('NSTP Number')->required(),
                     ]),
@@ -206,19 +189,6 @@ class StudentsResource extends Resource
                                 return [];
                             }
                         )->searchable(),
-<<<<<<< Updated upstream
-
-                        Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                            function ($get) {
-                                $college_id = $get('college_id');
-                                if ($college_id) {
-                                    return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                }
-                                return [];
-                            }
-                        )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-
-=======
                         ]),
                         Grid::make(2)->schema([
                         Select::make('program_id')->label('Select Program')->required()->reactive()->options(
@@ -231,7 +201,6 @@ class StudentsResource extends Resource
                             }
                         )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
 
->>>>>>> Stashed changes
                         Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
                             function ($get) {
                                 $program_id = $get('program_id');
@@ -241,18 +210,11 @@ class StudentsResource extends Resource
                                 return [];
                             }
                         )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-<<<<<<< Updated upstream
-
-
-
-                        Repeater::make('records_regular')->label('Grades')->reactive()
-=======
                         ]),
 
 
 
                         Repeater::make('records_regular')->label('Curriculum')
->>>>>>> Stashed changes
                             ->schema([
                                 Select::make('curricula_id')->label('Select Curriculum')->required()->reactive()->options(
                                     function ($get) {
@@ -281,13 +243,6 @@ class StudentsResource extends Resource
                                         }
                                     }),
 
-<<<<<<< Updated upstream
-                                Repeater::make('records_regular_grades')
-                                    ->label('Courses & Grades')
-                                    ->reactive()
-                                    ->schema([
-                                        Select::make('course_code')->label('Course Code')->options(
-=======
                                 TableRepeater::make('records_regular_grades')
                                     ->label('Courses & Grades')
                                     ->reactive()
@@ -303,7 +258,6 @@ class StudentsResource extends Resource
                                         ->label('Course Code')
                                         ->required()
                                         ->options(
->>>>>>> Stashed changes
                                             function ($get) {
                                                 $curricula_id = $get('../../curricula_id'); // Ensure correct path
                                                 if ($curricula_id) {
@@ -312,16 +266,6 @@ class StudentsResource extends Resource
                                                 }
                                                 return [];
                                             }
-<<<<<<< Updated upstream
-                                        )->reactive()->searchable()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                $course = Courses::find($state);
-                                                $set('descriptive_title', $course ? $course->descriptive_title : 'Unknown Descriptive Title');
-                                                $set('course_unit', $course ? $course->course_unit : 'Unknown Units');
-                                            }),
-                                        TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
-                                        TextInput::make('final_grade')->label('Final Grade')->required(),
-=======
                                         )
                                         ->searchable()
                                         ->reactive()
@@ -337,62 +281,10 @@ class StudentsResource extends Resource
                                         Hidden::make('course_code'),
                                         TextInput::make('descriptive_title')->label('Descriptive Title')->disabled(),
                                         TextInput::make('final_grade')->label('Final Grade')->required()->maxLength(255),
->>>>>>> Stashed changes
                                         TextInput::make('removal_rating')->label('Removal Rating'),
                                         TextInput::make('course_unit')->label('Units of Credit')->disabled(),
                                     ]),
                             ])
-<<<<<<< Updated upstream
-
-                    ]),
-                Section::make('Student Records (Irregular)')
-                    ->visible(fn($get) => !$get('is_regular'))
-                    ->schema([
-                        Repeater::make('records_irregular')
-                            ->reactive()
-                            ->schema([
-                                Select::make('campus_id')
-                                    ->label('Select Campus')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        Campuses::all()->pluck('campus_name', 'id')
-                                    ),
-                                Select::make('college_id')
-                                    ->label('Select College')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(
-                                        function ($get) {
-                                            $campus_id = $get('campus_id');
-                                            if ($campus_id) {
-                                                return Colleges::where('campus_id', $campus_id)->pluck('college_name', 'id');
-                                            }
-                                            return [];
-                                        }
-                                    )->searchable(),
-                                Select::make('program_id')->label('Select Program')->required()->reactive()->options(
-                                    function ($get) {
-                                        $college_id = $get('college_id');
-                                        if ($college_id) {
-                                            return Programs::where('college_id', $college_id)->pluck('program_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => Programs::find($value)?->program_name ?? 'Unknown Program'),
-                                Select::make('program_major_id')->label('Select Program Major')->reactive()->options(
-                                    function ($get) {
-                                        $program_id = $get('program_id');
-                                        if ($program_id) {
-                                            return ProgramsMajor::where('program_id', $program_id)->pluck('program_major_name', 'id');
-                                        }
-                                        return [];
-                                    }
-                                )->searchable()->getOptionLabelUsing(fn($value) => ProgramsMajor::find($value)?->program_major_name ?? 'Unknown Major'),
-                            ])
-
-                    ])
-=======
 
                     ]),
                     Section::make('Student Records (Irregular)')
@@ -535,58 +427,10 @@ class StudentsResource extends Resource
                 ->addActionLabel('Add New Campus/College')
                 ->collapsible(),
         ]),
->>>>>>> Stashed changes
             ]);
     }
     public static function table(Table $table): Table
     {
-<<<<<<< Updated upstream
-        return $table
-            ->columns([
-                TextColumn::make('last_name')
-                    ->label('Last Name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('first_name')
-                    ->label('First Name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('middle_name')
-                    ->label('Middle Name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('suffix')
-                    ->label('Suffix')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('sex')
-                    ->label('Sex')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('address')
-                    ->label('Address')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthdate')
-                    ->label('Date of Birth')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birthplace')
-                    ->label('Place of Birth')
-                    ->searchable()
-                    ->sortable(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-=======
         $user = Filament::auth()->user();
         return $table
         ->query(
@@ -713,23 +557,54 @@ class StudentsResource extends Resource
                         $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
                             ->where('students_graduation_infos.graduation_date', 'like', "%{$search}%");
                     }),
-                    TextColumn::make('status')
+                //     TextColumn::make('status')
+                //     ->label('Status')
+                //     ->badge() // Turns text into a badge
+                //     ->formatStateUsing(fn (string $state): string => strtoupper($state))
+                //     ->color(fn (string $state): string => match ($state) {
+                //         'verified' => 'success',   // Green badge for verified
+                //         'unverified' => 'danger',  // Red badge for unverified
+                //         default => 'gray',         // Default gray badge
+                // }),
+                // ])   
+
+                IconColumn::make('status')
                     ->label('Status')
-                    ->badge() // Turns text into a badge
-                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
+                    ->icon(fn (string $state): string => match ($state) {
+                        'verified' => 'heroicon-o-check-circle', 
+                        'unverified' => 'heroicon-o-x-circle',    
+                        default => 'heroicon-o-question-mark-circle', 
+                    })
                     ->color(fn (string $state): string => match ($state) {
-                        'verified' => 'success',   // Green badge for verified
-                        'unverified' => 'danger',  // Red badge for unverified
-                        default => 'gray',         // Default gray badge
-                }),
-                ])   
+                        'verified' => 'info',  
+                        'unverified' => 'danger',  
+                        default => 'gray',         
+                    })
+                    ->tooltip(fn (string $state): string => match ($state) {
+                        'verified' => 'Verified',
+                        'unverified' => 'Unverified',
+                        default => 'Unknown status',
+                    })
+                ])
+
                 ->emptyStateIcon('heroicon-s-user')
                 ->emptyStateHeading('Student Not Available')
                 ->emptyStateDescription('There are currently no students in the system.')
+                // ->filters([
+                //     // Show the "Trashed" filter ONLY if the user is a super admin
+                // ...($user->roles->contains('name', 'super_admin') ? [Tables\Filters\TrashedFilter::make()] : [])
+                // ])
                 ->filters([
                     // Show the "Trashed" filter ONLY if the user is a super admin
-                ...($user->roles->contains('name', 'super_admin') ? [Tables\Filters\TrashedFilter::make()] : [])
+                    ...($user->roles->contains('name', 'super_admin') 
+                        ? [Tables\Filters\TrashedFilter::make()] 
+                        : []
+                    )
                 ])
+                ->filtersTriggerAction(fn (\Filament\Tables\Actions\Action $action) => 
+                    $action->icon('heroicon-o-adjustments-vertical')
+                )
+                
                 ->actions([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
@@ -740,7 +615,6 @@ class StudentsResource extends Resource
                     Tables\Actions\BulkActionGroup::make([
                         Tables\Actions\DeleteBulkAction::make(),
                     ]),
->>>>>>> Stashed changes
             ]);
     }
 

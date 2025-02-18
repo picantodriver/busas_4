@@ -10,8 +10,8 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Filament\View\PanelsRenderHook;
 use Filament\Navigation\NavigationGroup;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -27,10 +28,8 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->collapsibleNavigationGroups(false)
-<<<<<<< Updated upstream
-=======
             ->sidebarCollapsibleOnDesktop()
-            ->brandLogo(asset('images/busas.png'))
+            ->brandLogo(asset('storage/busas.png'))
             ->brandLogoHeight('55px')
             // ->brandName(config('app.name')) 
             ->maxContentWidth('full')
@@ -39,7 +38,6 @@ class AdminPanelProvider extends PanelProvider
             //     PanelsRenderHook::TOPBAR,
             //     fn () => view('filament.widgets.date-time-widget')
             // )
->>>>>>> Stashed changes
             ->default()
             ->id('admin')
             ->path('admin')
@@ -67,8 +65,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
+            ])
+            ->plugins([
+                FilamentApexChartsPlugin::make()
             ])
             ->middleware([
                 EncryptCookies::class,

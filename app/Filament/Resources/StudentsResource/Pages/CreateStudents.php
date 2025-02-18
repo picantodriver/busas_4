@@ -34,21 +34,6 @@ class CreateStudents extends CreateRecord
         
         Log::info('Created student:', ['id' => $student->id]);
 
-<<<<<<< Updated upstream
-        // Create student records
-        foreach ($data['records'] as $record) {
-            foreach ($record['courses'] as $course) {
-                $student->records()->create([
-                    'student_id' => $student->id,
-                    'final_grades' => $course['final_grades'],
-                    'removal_rating' => $course['removal_rating'],
-                    'acad_term_id' => $record['acad_term_id'],
-                    'course_id' => $course['course_id'],
-                    'descriptive_title' => $course['descriptive_title'],
-                    'units_of_credit' => $course['units_of_credit'],
-                ]);
-                dd($data);
-=======
         // Handle regular student records
         if (isset($data['records_regular']) && $data['is_regular']) {
             Log::info('Regular records data:', $data['records_regular']);
@@ -88,7 +73,6 @@ class CreateStudents extends CreateRecord
                         ]);
                     }
                 }
->>>>>>> Stashed changes
             }
         }
 

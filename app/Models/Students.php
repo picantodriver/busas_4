@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Students extends Model
 {
     use HasFactory;
     use UserTracking;
+    use SoftDeletes;
 
     protected $fillable = [
         'created_by',
@@ -25,13 +28,12 @@ class Students extends Model
         'gwa',
         'nstp_number',
         'is_regular',
-<<<<<<< Updated upstream
-=======
         'deleted_by',
         'status',
->>>>>>> Stashed changes
     ];
 
+    protected $dates = ['deleted_at'];
+    
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -55,8 +57,6 @@ class Students extends Model
     {
         return $this->hasOne(StudentsRegistrationInfos::class, 'student_id');
     }
-<<<<<<< Updated upstream
-=======
 
     public function deleter()
     {
@@ -83,5 +83,4 @@ class Students extends Model
             }
         });
     }
->>>>>>> Stashed changes
 };

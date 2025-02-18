@@ -1,8 +1,6 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 @import '/vendor/awcodes/filament-table-repeater/resources/css/plugin.css';
 @config 'tailwind.config.js';
-<<<<<<< Updated upstream
-=======
 
 :root {
     --sidebar-width: 18rem !important;
@@ -250,4 +248,3 @@
     @apply text-[#ededed];
     @apply bg-gray-800;
 }
->>>>>>> Stashed changes
