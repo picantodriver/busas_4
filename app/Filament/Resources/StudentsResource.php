@@ -25,6 +25,7 @@ use Filament\Forms\Components\Section;
 use App\Models\StudentsGraduationInfos;
 use App\Models\StudentsRecords;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Forms\Components\Toggle;
 use Awcodes\TableRepeater\Components\TableRepeater;
 use Awcodes\TableRepeater\Header;
@@ -481,6 +482,14 @@ class StudentsResource extends Resource
                         $query->leftJoin('students_graduation_infos', 'students.id', '=', 'students_graduation_infos.student_id')
                             ->where('students_graduation_infos.graduation_date', 'like', "%{$search}%");
                     }),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge() // Turns text into a badge
+                    ->color(fn (string $state): string => match ($state) {
+                        'verified' => 'success',   // Green badge for verified
+                        'unverified' => 'danger',  // Red badge for unverified
+                        default => 'gray',         // Default gray badge
+                }),
             ])
             ->defaultSort('name')
             ->modifyQueryUsing(function (Builder $query) {
