@@ -19,9 +19,28 @@ class StudentsRecords extends Model
         'student_id',
         'acad_term_id',
         'deleted_at',
-        'is_regular',
+        //'is_regular',
+        'student_id',
+        'curricula_id',
         'course_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (Auth::hasUser()) {
+                $model->created_by = Auth::id();
+            }
+        });
+
+        static::updating(function ($model) {
+            if (Auth::hasUser()) {
+                $model->updated_by = Auth::id();
+            }
+        });
+    }
 
     public function student()
     {
@@ -38,5 +57,13 @@ class StudentsRecords extends Model
     public function course()
     {
         return $this->belongsTo(Courses::class, 'course_id');
+    }
+    public function academicTerm()
+    {
+        return $this->belongsTo(AcadTerms::class, 'acad_term_id');
+    }
+    public function curricula()
+    {
+        return $this->belongsTo(Curricula::class, 'curricula_id');
     }
 }

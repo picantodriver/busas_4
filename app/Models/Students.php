@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Students extends Model
 {
@@ -25,6 +28,10 @@ class Students extends Model
         'gwa',
         'nstp_number',
         'is_regular',
+        'deleted_by',
+        'region',
+        'province',
+        'city_municipality',
     ];
 
     public function creator()
@@ -39,6 +46,11 @@ class Students extends Model
     public function graduationInfos()
     {
         return $this->hasOne(StudentsGraduationInfos::class, 'student_id');
+    }
+
+    public function ladderized(): HasMany
+    {
+        return $this->hasMany(Ladderized::class, 'student_id');
     }
 
     public function records()

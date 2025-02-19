@@ -1,3 +1,250 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 @import '/vendor/awcodes/filament-table-repeater/resources/css/plugin.css';
 @config 'tailwind.config.js';
+
+:root {
+    --sidebar-width: 18rem !important;
+}
+
+
+.fi-sidebar {
+    @apply bg-white;
+    transition: all 0.5s ease;
+}
+
+.fi-sidebar-item>a>svg,
+.fi-sidebar-item>a>span {
+    @apply text-[#545a63] font-medium;
+}
+
+.fi-sidebar-item-active>a {
+    @apply bg-blue-200 bg-opacity-50 relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: -0.5rem; 
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0.25rem; 
+        height: 1.5rem; 
+        background-color: #0099CB; 
+        border-top-left-radius: 0.25rem; 
+        border-bottom-left-radius: 0.25rem;
+    }
+
+    &>svg,
+    span {
+        @apply text-[#0099CB];
+    }
+
+    &:hover {
+        @apply bg-blue-200 bg-opacity-50;
+
+        &>svg,
+        span {
+            @apply text-orange-500;
+        }
+    }
+}
+
+.fi-sidebar-item>a:hover {
+
+    &>svg,
+    span {
+        @apply text-orange-500;
+    }
+}
+
+.fi-btn:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-btn:hover svg {
+    @apply text-[#0099CB];
+}
+
+#key-bindings-1:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+#key-bindings-1:hover svg {
+    @apply text-red-600;
+}
+
+#key-bindings-2:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-ac-action:hover {
+    @apply bg-white text-[#0099CB];
+}
+
+.fi-ac-action:hover svg {
+    @apply text-[#0099CB];
+}
+
+.dark .fi-btn:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-btn:hover svg {
+    @apply text-[#66B2FF];
+}
+
+.dark #key-bindings-1:hover {
+    @apply bg-gray-800 text-red-400;
+}
+
+.dark #key-bindings-1:hover svg {
+    @apply text-red-400;
+}
+
+.dark #key-bindings-2:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-ac-action:hover {
+    @apply bg-gray-800 text-[#66B2FF];
+}
+
+.dark .fi-ac-action:hover svg {
+    @apply text-[#66B2FF];
+}
+
+
+/* .fi-topbar, .fi-sidebar-header {
+    display: none;
+} */
+
+.apexcharts-bar-area:hover {
+    fill: #FC7019 !important;
+    stroke: #FC7019 !important;
+}
+
+.filament-apex-charts-heading {
+    color: #566a7f;
+}
+
+.apexcharts-title-text {
+    fill: #6D7E90 !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    color: #555555;
+}
+
+.fi-wi-stats-overview-stat-icon {
+    color: #0099CB !important;
+}
+
+.dark .footer {
+    width: 100%;
+    text-align: center;
+    height: 30px;
+    position: relative;
+}
+
+/* .fi-ta-empty-state-heading {
+    color: #FC7019 !important;
+}
+
+.fi-ta-empty-state-icon-ctn svg {
+    color: #FC7019 !important;
+} */
+
+/* .fi-icon-btn-icon {
+    background-color: #3B82F6; 
+    color: white;
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+/* .fi-main {
+    padding: 1.5rem !important; 
+} */
+ /* Base styles for sidebar */
+ 
+
+ /* Working sidebar hover */
+/* .fi-sidebar-nav {
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.fi-sidebar-item-label,
+.fi-sidebar-group-label,
+.fi-sidebar-group-button {
+    transition: opacity 0.6s ease, transform 0.5s ease;
+    white-space: nowrap;
+}
+
+.fi-sidebar-item-button {
+    transition: padding 0.5s ease;
+    position: relative;
+    white-space: nowrap;
+}
+
+.fi-sidebar-item-icon {
+    font-size: 1.5rem;
+    transition: transform 0.5s ease;
+}
+
+.fi-sidebar-group {
+    position: relative;
+    transition: padding 0.5s ease;
+}
+
+.fi-sidebar-nav:hover {
+    width: 16rem;
+}
+
+.fi-sidebar-nav:hover .fi-sidebar-item-label,
+.fi-sidebar-nav:hover .fi-sidebar-group-label,
+.fi-sidebar-nav:hover .fi-sidebar-group-button {
+    display: flex !important;
+    opacity: 1 !important;
+    transform: translateX(0);
+}
+
+.fi-sidebar-nav.collapse .fi-sidebar-item-label,
+.fi-sidebar-nav.collapse .fi-sidebar-group-label,
+.fi-sidebar-nav.collapse .fi-sidebar-group-button {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.fi-sidebar-item-button {
+    position: relative;
+}
+
+.fi-badge {
+    transition: opacity 0.6s ease;
+}
+
+.fi-sidebar-nav.collapse .fi-badge {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fi-sidebar-group-items {
+    transition: opacity 0.5s ease;
+}
+
+.fi-sidebar-nav.collapse .fi-sidebar-item-button {
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.fi-sidebar-nav:hover .fi-sidebar-item-button {
+    justify-content: flex-start;
+    padding: 0.5rem 1rem;
+} */
+
+.dark .table-repeater-header-column {
+    @apply text-[#ededed];
+    @apply bg-gray-800;
+}

@@ -26,6 +26,16 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->collapsibleNavigationGroups(false)
+            ->sidebarCollapsibleOnDesktop()
+            ->brandLogo(asset('storage/busas.png'))
+            ->brandLogoHeight('55px')
+            // ->brandName(config('app.name')) 
+            ->maxContentWidth('full')
+            //->topbar(false)
+            // ->renderHook(
+            //     PanelsRenderHook::TOPBAR,
+            //     fn () => view('filament.widgets.date-time-widget')
+            // )
             ->default()
             ->id('admin')
             ->path('admin')

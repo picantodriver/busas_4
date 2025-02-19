@@ -1,0 +1,1 @@
+<img src="{{ asset('images/busas.png') }}" alt="Bicol University Student Archiving System" class="h-10">
