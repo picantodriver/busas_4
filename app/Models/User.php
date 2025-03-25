@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+// use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
     use HasRoles;
+    // use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,9 +25,23 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'initials',
         'email',
+        'deleted_by',
+        'deleted_at',
         'password',
     ];
+
+    protected $dates = ['deleted_at'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($programs) {
+            $programs->update(['deleted_by' => Auth::id()]);
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -46,5 +64,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Set the user's password.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
     }
 }

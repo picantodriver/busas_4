@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\UserTracking;
+use App\Traits\HasHashedRouteKey;
 
 class Campuses extends Model
 {
     use UserTracking;
     use HasFactory;
+    use HasHashedRouteKey;
 
     protected $fillable = [
         'campus_name',

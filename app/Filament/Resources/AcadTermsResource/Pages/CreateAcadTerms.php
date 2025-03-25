@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAcadTerms extends CreateRecord
 {
     protected static string $resource = AcadTermsResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

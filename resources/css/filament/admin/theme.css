@@ -1,11 +1,19 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 @import '/vendor/awcodes/filament-table-repeater/resources/css/plugin.css';
+@import 'boxicons/css/boxicons.min.css';
 @config 'tailwind.config.js';
 
 :root {
     --sidebar-width: 18rem !important;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+.fi-topbar {
+    transition: transform 0.3s ease;
+}
 
 .fi-sidebar {
     @apply bg-white;

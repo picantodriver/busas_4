@@ -29,8 +29,9 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->collapsibleNavigationGroups(false)
             ->sidebarCollapsibleOnDesktop()
-            ->brandLogo(asset('storage/busas.png'))
-            ->brandLogoHeight('55px')
+            ->brandLogo(asset('storage/busas_logo_light.png'))
+            ->brandLogoHeight('60px')
+            ->darkModeBrandLogo(asset('storage/busas_logo_dark.png'))
             // ->brandName(config('app.name')) 
             ->maxContentWidth('full')
             //->topbar(false)

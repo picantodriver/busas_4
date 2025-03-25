@@ -40,26 +40,56 @@ class AcadYearsResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('year'),
+                TextColumn::make('year')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('start_date')
-                ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('end_date'),
                 TextColumn::make('AcadTerms.acad_term')
-                ->label('Academic Terms')
-                ->listWithLineBreaks()
-                ->bulleted(),
+                    ->label('Academic Terms')
+                    ->listWithLineBreaks()
+                    ->bulleted()
+                    ->searchable()
+                    ->sortable(),
+                // TextColumn::make('status')
+                //     ->label('Status')
+                //     ->badge()
+                //     ->formatStateUsing(fn(string $state): string => match ($state) {
+                //         'verified' => 'Verified',
+                //         'unverified' => 'Not Verified',
+                //         default => 'Unknown',
+                //     })
+                //     ->color(fn(string $state): string => match ($state) {
+                //         'verified' => 'success',
+                //         'unverified' => 'danger',
+                //         default => 'gray',
+                //     })
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-pencil-square')
+                    ->tooltip('Edit Record'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-trash')
+                    ->modalHeading('Delete Academic Year and Term')
+                    ->modalDescription(fn(AcadYears $record): string => "Are you sure you'd like to delete academic year " . $record->year . ' and'. $record->acad_term .' ?')
+                    ->tooltip('Delete Record'),
+                    ...((auth()->guard()->user()?->roles->contains('name', 'Developer')) ? [Tables\Actions\RestoreAction::make()] : [])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc'); // Sort by most recently created
     }
 
     public static function getRelations(): array

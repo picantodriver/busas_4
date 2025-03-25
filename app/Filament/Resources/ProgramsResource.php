@@ -18,6 +18,8 @@ use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Repeater;
+use Awcodes\TableRepeater\Components\TableRepeater;
+use Awcodes\TableRepeater\Header;
 
 class ProgramsResource extends Resource
 {
@@ -62,9 +64,13 @@ class ProgramsResource extends Resource
                 ->required(),
                 TextInput::make('program_name')->required(),
                 TextInput::make('program_abbreviation')->required(),
-                Repeater::make('programMajors')
+                TableRepeater::make('programMajors')
                     ->relationship('programMajors')
                     ->label('Program Majors')
+                    ->headers([
+                        Header::make('program_major_name')->label('Program Major')->width('200px'),
+                        Header::make('program_major_abbreviation')->label('Program Major Abbreviation')->width('200px'),
+                    ])
                     ->schema([
                         TextInput::make('program_major_name')
                             ->label('Program Major'),
@@ -80,37 +86,68 @@ class ProgramsResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('program_name')
-                    ->label('Program Name'),
+                    ->label('Program Name')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('program_abbreviation')
-                    ->label('Program Abbreviation'),
+                    ->label('Program Abbreviation')
+                    ->searchable(),
                 TextColumn::make('college.college_name')
                     ->label('College Name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('programMajors.program_major_name')
                     // ->getStateUsing(function ($record) {
                     //     return $record->programMajors->pluck('program_major_name')->join(', ');
                     // })
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    ->bulleted()
+                    ->searchable(),
                 TextColumn::make('programMajors.program_major_abbreviation')
                     // ->label('Program Major Abbreviation')
                     // ->getStateUsing(function ($record) {
                     //     return $record->programMajors->pluck('program_major_abbreviation')->join(', ');
                     // })
                     ->listWithLineBreaks()
+                    ->searchable()
                     ->bulleted(),
+                // TextColumn::make('status')
+                //     ->label('Status')
+                //     ->badge()
+                //     ->formatStateUsing(fn(string $state): string => match ($state) {
+                //         'verified' => 'Verified',
+                //         'unverified' => 'Not Verified',
+                //         default => 'Unknown',
+                //     })
+                //     ->color(fn(string $state): string => match ($state) {
+                //         'verified' => 'success',
+                //         'unverified' => 'danger',
+                //         default => 'gray',
+                //     })
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-pencil-square')
+                    ->tooltip('Edit Record'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-trash')
+                    ->modalHeading('Delete Program and Major')
+                    ->modalDescription(fn(Programs $record): string => "Are you sure you'd like to delete " . $record->program_name .' program?')
+                    ->tooltip('Delete Record'),
+                    ...((auth()->guard()->user()?->roles->contains('name', 'Developer')) ? [Tables\Actions\RestoreAction::make()] : [])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc'); // Sort by most recently created
     }
 
     public static function getRelations(): array

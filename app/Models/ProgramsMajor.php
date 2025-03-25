@@ -36,4 +36,8 @@ class ProgramsMajor extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function records()
+    {
+        return $this->hasMany(StudentsRecords::class, 'program_major_id');
+    }
 }

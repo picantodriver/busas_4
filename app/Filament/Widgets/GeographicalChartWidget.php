@@ -7,12 +7,19 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class GeographicalChartWidget extends ApexChartWidget
 {
+    protected static ?int $sort = 4;
     protected static ?string $chartId = 'graduateStudentsChart';
     protected static ?string $heading = 'Number of Graduate Students Per Province';
 
     public ?string $selectedYear = '2024';
     public ?string $selectedProvince = 'All';
     public ?string $selectedMunicipality = 'All';
+
+    public static function canView(): bool
+    {
+        return false;
+    }
+    
 
     // Sample data for Bicol region provinces and municipalities
     protected array $bicolData = [
@@ -181,6 +188,7 @@ class GeographicalChartWidget extends ApexChartWidget
             'chart' => [
                 'type' => 'bar',
                 'height' => 300,
+                'fontFamily' => 'Inter, sans-serif',
             ],
             'series' => [
                 [
@@ -192,14 +200,14 @@ class GeographicalChartWidget extends ApexChartWidget
                 'categories' => array_keys($data),
                 'labels' => [
                     'style' => [
-                        'fontFamily' => 'inherit',
+                       'fontFamily' => 'Inter, sans-serif',
                     ],
                 ],
             ],
             'yaxis' => [
                 'labels' => [
                     'style' => [
-                        'fontFamily' => 'inherit',
+                        'fontFamily' => 'Inter, sans-serif',
                     ],
                 ],
             ],
@@ -211,8 +219,33 @@ class GeographicalChartWidget extends ApexChartWidget
                 ],
             ],
             'title' => [
-                'text' => "Graduate Students in Bicol Region ({$this->selectedYear})",
-                'align' => 'center',
+            'text' => "Graduate Students in Bicol Region ({$this->selectedYear})",
+            'align' => 'center',
+            'style' => [
+                'fontWeight' => 'bold',
+                'fontFamily' => 'Inter, sans-serif',
+                'color' => '#263238',
+            ],
+        ],
+        'dataLabels' => [
+            'style' => [
+                'fontFamily' => 'Inter, sans-serif',
+            ],
+        ],
+
+            'plugins' => [
+                'tooltip' => [
+                    'mode' => 'index',
+                    'intersect' => false,
+                    'backgroundColor' => 'var(--chart-tooltip-background)',
+                    'titleColor' => 'var(--chart-tooltip-text)',
+                    'bodyColor' => 'var(--chart-tooltip-text)',
+                ],
+                'legend' => [
+                    'labels' => [
+                        'color' => 'var(--chart-legend-text)',
+                    ],
+                ],
             ],
         ];
     }

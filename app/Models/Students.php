@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
+use App\Traits\HasHashedRouteKey;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Str;
 
 class Students extends Model
 {
     use HasFactory;
     use UserTracking;
     use SoftDeletes;
+    use HasHashedRouteKey;
 
     protected $fillable = [
         'created_by',
@@ -27,13 +33,20 @@ class Students extends Model
         'birthplace',
         'gwa',
         'nstp_number',
+        'student_type',
         'is_regular',
         'deleted_by',
+        'region',
+        'province',
+        'city_municipality',
+        'region_name',
+        'province_name',
+        'city_municipality_name',
+        'country',
         'status',
     ];
 
     protected $dates = ['deleted_at'];
-    
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -45,7 +58,12 @@ class Students extends Model
     }
     public function graduationInfos()
     {
-        return $this->hasOne(StudentsGraduationInfos::class, 'student_id');
+        return $this->hasMany(StudentsGraduationInfos::class, 'student_id');
+    }
+
+    public function ladderized(): HasMany
+    {
+        return $this->hasMany(Ladderized::class, 'student_id');
     }
 
     public function records()
@@ -55,12 +73,28 @@ class Students extends Model
 
     public function registrationInfos()
     {
-        return $this->hasOne(StudentsRegistrationInfos::class, 'student_id');
+        return $this->hasMany(StudentsRegistrationInfos::class, 'student_id');
+    }
+    
+    public function college()
+    {
+        return $this->belongsTo(Colleges::class, 'college_id');
+    }
+    public function campus()
+    {
+        return $this->belongsTo(Campuses::class, 'campus_id');
+    }
+    public function studentRecords()
+    {
+        return $this->hasMany(StudentsRecords::class, 'student_id', 'id');
     }
 
-    public function deleter()
+    // If you want to specifically get the record with attachments
+    public function recordWithAttachment()
     {
-        return $this->belongsTo(User::class, 'deleted_by'); // Track who deleted the record
+        return $this->hasMany(StudentsRecords::class, 'student_id', 'id')
+                    ->whereNotNull('attachment')
+                    ->first();
     }
 
     protected static function boot()
@@ -82,5 +116,22 @@ class Students extends Model
                 $student->status = 'verified';
             }
         });
-    }
+
+        // static::creating(function ($model) {
+        //     $model->uuid = (string) Str::uuid();
+        // });
+        }
+
+        // public function getRouteKeyName()
+        // {
+        //     return 'uuid';
+        // }
+    
+
+        // public function up()
+        // {
+        // Schema::table('students', function (Blueprint $table) {
+        //     $table->uuid('uuid')->unique()->after('id');
+        // });
+        // }
 };

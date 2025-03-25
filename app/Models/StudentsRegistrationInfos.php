@@ -32,4 +32,8 @@ class StudentsRegistrationInfos extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function academicTerm()
+{
+    return $this->belongsTo(AcadTerms::class, 'acad_term_id');
+}
 }

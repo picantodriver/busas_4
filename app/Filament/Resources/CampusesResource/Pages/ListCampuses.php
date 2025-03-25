@@ -15,7 +15,8 @@ class ListCampuses extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('New Campuses')
-            ->icon('heroicon-o-plus'),
+            ->icon('heroicon-o-plus')
+            ->modalHeading('Add Campus & College'),
         ];
     }
 }

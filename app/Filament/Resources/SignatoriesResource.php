@@ -61,18 +61,43 @@ class SignatoriesResource extends Resource
                     ->label('Designation')
                     ->searchable()
                     ->sortable(),
+                // TextColumn::make('status')
+                //     ->label('Status')
+                //     ->badge()
+                //     ->formatStateUsing(fn(string $state): string => match ($state) {
+                //         'verified' => 'Verified',
+                //         'unverified' => 'Not Verified',
+                //         default => 'Unknown',
+                //     })
+                //     ->color(fn(string $state): string => match ($state) {
+                //         'verified' => 'success',
+                //         'unverified' => 'danger',
+                //         default => 'gray',
+                //     })
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-pencil-square')
+                    ->tooltip('Edit Record'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-trash')
+                    ->modalHeading('Delete Signatory')
+                    ->modalDescription(fn(Signatories $record): string => "Are you sure you'd like to delete the signatory of " . $record->employee_name . ($record->suffix ? ', ' . $record->suffix : '') . '?')
+                    ->tooltip('Delete Record'),
+                    ...((auth()->guard()->user()?->roles->contains('name', 'Developer')) ? [Tables\Actions\RestoreAction::make()] : [])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc'); // Sort by most recently created
     }
 
     public static function getRelations(): array

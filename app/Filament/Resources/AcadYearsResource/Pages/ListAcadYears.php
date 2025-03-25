@@ -15,7 +15,8 @@ class ListAcadYears extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('New Academic Years & Terms')
-            ->icon('heroicon-o-plus'),
+            ->icon('heroicon-o-plus')
+            ->modalHeading('New Academic Year & Term'),
         ];
     }
 }

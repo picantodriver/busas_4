@@ -45,6 +45,8 @@ class CollegesResource extends Resource
                     ->required(),
                 TextInput::make('college_address')
                     ->required(),
+                TextInput::make('college_abbreviation')
+                    ->required(),
             ]);
     }
 
@@ -58,6 +60,8 @@ class CollegesResource extends Resource
                     ->label('Campus Name'),
                 TextColumn::make('college_address')
                     ->label('College Address'),
+                TextColumn::make('college_abbreviation')
+                    ->label('Campus Abbreviation'),
             ])
             ->filters([
                 //
@@ -86,5 +90,9 @@ class CollegesResource extends Resource
             //'create' => Pages\CreateColleges::route('/create'),
             //'edit' => Pages\EditColleges::route('/{record}/edit'),
         ];
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

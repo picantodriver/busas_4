@@ -15,6 +15,7 @@ class Colleges extends Model
         'campus_id',
         'college_name',
         'college_address',
+        'college_abbreviation',
         'created_by',
         'updated_by',
     ];

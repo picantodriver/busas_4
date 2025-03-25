@@ -5,22 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UserTracking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class AcadYears extends Model
 {
     use HasFactory;
     use UserTracking;
+    use SoftDeletes;
 
     protected $fillable = [
         'year',
         'start_date',
         'end_date',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'status',
+        'deleted_by',
     ];
 
-
+    protected $dates = ['deleted_at'];
     public function acadTerms()
     {
         return $this->hasMany(AcadTerms::class, 'acad_year_id');
@@ -62,5 +66,26 @@ class AcadYears extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($acadYear) {
+            $acadYear->update(['deleted_by' => Auth::id()]);
+        });
+
+        static::creating(function ($acadYear) {
+            if (empty($acadYear->status)) {
+                $acadYear->status = 'unverified';
+            }
+        });
+
+        static::updating(function ($acadYear) {
+            if ($acadYear->isDirty() && $acadYear->status === 'unverified') {
+                $acadYear->status = 'verified';
+            }
+        });
     }
 }

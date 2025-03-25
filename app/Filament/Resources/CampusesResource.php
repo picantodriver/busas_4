@@ -42,7 +42,9 @@ class CampusesResource extends Resource
                     TextInput::make('college_name')->required()
                         ->label('College Name'),
                     TextInput::make('college_address')->required()
-                        ->label('College Address')
+                        ->label('College Address'),
+                    TextInput::make('college_abbreviation')->required()
+                        ->label('College Abbreviation')
                 ])
 
             ]);
@@ -53,21 +55,33 @@ class CampusesResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('campus_name')
-                    ->label('Campus Name'),
+                    ->label('Campus Name')
+                    ->searchable(),
                 TextColumn::make('colleges.college_name')
                     ->label('Colleges')
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    ->bulleted()
+                    ->searchable(),
                 TextColumn::make('colleges.college_address')
                     ->label('College Address')
                     ->listWithLineBreaks()
                     ->bulleted()
+                    ->searchable(),
+                TextColumn::make('colleges.college_abbreviation')
+                    ->label('Campus Abbreviation')
+                    ->listWithLineBreaks()
+                    ->bulleted()
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-pencil-square')
+                    ->tooltip('Edit Record'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

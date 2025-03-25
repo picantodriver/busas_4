@@ -23,12 +23,16 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Split;
+use Awcodes\TableRepeater\Components\TableRepeater;
+use Awcodes\TableRepeater\Header;
 
 use function Livewire\wrap;
 
 class CurriculaResource extends Resource
 {
     protected static ?string $model = Curricula::class;
+
+    // protected static ?string $label = 'Curricula';
     protected static ?string $navigationGroup = 'Academic Structure';
 
     //protected static ?int $navigationSort = 10; //set the order in sidebar
@@ -110,28 +114,34 @@ class CurriculaResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, callable $get) {
                         $set('curricula_name', self::generateCurriculumName($get));
                     }),
-                Repeater::make('courses')
+                    TableRepeater::make('courses')
                     ->relationship('courses')
                     ->label('Courses')
                     ->required()
-                    ->schema([
-                        Split::make([
-                            TextInput::make('course_code')
-                                ->label('Course Code')
-                                ->required()
-                                ->grow(false),
-                            TextInput::make('descriptive_title')
-                                ->label('Descriptive Title')
-                                ->required()
-                                ->grow(true),
-                            TextInput::make('course_unit')
-                                ->label('Units of Credit')
-                                ->required()
-                                ->grow(false)
-                        ])->from('md')
+                    ->headers([
+                        Header::make('course_code')->label('Course Code')->width('150px'),
+                        Header::make('descriptive_title')->label('Descriptive Title')->width('400px'),
+                        Header::make('course_unit')->label('Units of Credit')->width('100px'),
                     ])
-                    ->grid(1)
+                    ->schema([
+                        TextInput::make('course_code')
+                            ->label('Course Code')
+                            // ->required()
+                            ->maxLength(255),
+                        TextInput::make('descriptive_title')
+                            ->label('Descriptive Title')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('course_unit')
+                            ->label('Units of Credit')
+                            ->required()
+                            ->maxLength(10),
+                    ])
                     ->columnSpanFull()
+                    ->defaultItems(1)
+                    ->reorderable()
+                    ->addActionLabel('Add New Course')
+                    
                 ]);
     }
 
@@ -153,35 +163,58 @@ class CurriculaResource extends Resource
             ->columns([
                 TextColumn::make('curricula_name')
                     ->label('Curriculum')
-                    ->wrap(),
+                    ->wrap()
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('programs.program_name')
-                    ->label('Program'),
+                    ->label('Program')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('programMajor.program_major_name')
-                    ->label('Program Major'),
+                    ->label('Program Major')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('courses.course_code')
                     ->label('Course Code')
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    ->bulleted()
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('courses.descriptive_title')
                     ->label('Descriptive Title')
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    ->bulleted()
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('courses.course_unit')
                     ->label('Units of Credit')
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    ->bulleted()
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-pencil-square')
+                    ->tooltip('Edit Record'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->icon('heroicon-o-trash')
+                    ->modalHeading('Delete Curriculum')
+                    ->modalDescription(fn(Curricula $record): string => "Are you sure you'd like to delete " . $record->curricula_name .' curriculum?')
+                    ->tooltip('Delete Record'),
+                    ...((auth()->guard()->user()?->roles->contains('name', 'Developer')) ? [Tables\Actions\RestoreAction::make()] : [])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc'); // Sort by most recently created
     }
 
     public static function getRelations(): array
@@ -195,8 +228,8 @@ class CurriculaResource extends Resource
     {
         return [
             'index' => Pages\ListCurriculas::route('/'),
-            //'create' => Pages\CreateCurricula::route('/create'),
-            //'edit' => Pages\EditCurricula::route('/{record}/edit'),
+            'create' => Pages\CreateCurricula::route('/create'),
+            'edit' => Pages\EditCurricula::route('/{record}/edit'),
         ];
     }
 }
